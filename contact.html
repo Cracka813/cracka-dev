@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Cracka.dev</title>
+<meta name="description" content="Get in touch with DJ Cracka — questions, support, or feedback.">
+<link rel="icon" type="image/png" sizes="32x32" href="https://hub.cracka.gg/favicon-32.png">
+<link rel="apple-touch-icon" href="https://hub.cracka.gg/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Chakra+Petch:wght@600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://hub.cracka.gg/style.css">
+<style>
+.cwrap{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:start}
+@media(max-width:860px){.cwrap{grid-template-columns:1fr}}
+.form-card{background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:32px}
+.form-card label{display:block;font-family:'Share Tech Mono';font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin:0 0 8px}
+.form-card .frow{margin-bottom:20px}
+.form-card input,.form-card select,.form-card textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line-strong);border-radius:10px;
+  color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:16px;padding:13px 14px;transition:.18s}
+.form-card input:focus,.form-card select:focus,.form-card textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,255,255,.14)}
+.form-card textarea{min-height:150px;resize:vertical}
+.form-note{font-family:'Share Tech Mono';font-size:12px;letter-spacing:1px;margin-top:14px;min-height:18px}
+.form-note.ok{color:var(--green)}.form-note.err{color:var(--pink)}
+.side-card{background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:28px}
+.side-card h3{font-size:19px;letter-spacing:1px;color:#fff;margin-bottom:14px}
+.side-links a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;
+  color:var(--txt);font-weight:600;letter-spacing:.5px;transition:.18s}
+.side-links a:hover{border-color:var(--ac,var(--cyan));transform:translateX(3px);color:#fff}
+.side-links a b{margin-left:auto;font-family:'Share Tech Mono';font-size:11px;color:var(--mut);letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<header class="nav"><div class="wrap nav-in">
+  <a class="brand" href="index.html"><img src="https://hub.cracka.gg/MadHatter_header.png" alt="Cracka FPV"><span>CRACKA<span class="dot">.</span><span class="gg">DEV</span></span></a>
+  <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
+  <nav class="menu" id="menu">
+    <a href="index.html">Home</a>
+    <a href="suite.html">The Suite</a>
+    <a href="content.html">Content</a>
+    <a href="prints.html">3D Print</a>
+    <a href="about.html">About</a>
+    <a href="license.html">License</a>
+    <a href="contact.html" class="active">Contact</a>
+  </nav>
+</div></header>
+
+<div class="page-head"><div class="wrap">
+  <div class="eyebrow">// Signal In</div>
+  <h1>Contact</h1>
+  <p>Questions about the suite, a license issue, or feedback? Drop a line and it lands straight in the inbox.</p>
+</div></div>
+
+<section><div class="wrap">
+  <div class="cwrap">
+    <div class="form-card">
+      <form id="cform" novalidate>
+        <div class="frow"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" required placeholder="Your name"></div>
+        <div class="frow"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@email.com"></div>
+        <div class="frow"><label for="topic">Topic</label>
+          <select id="topic" name="topic">
+            <option>General question</option>
+            <option>Suite / license support</option>
+            <option>Bug report</option>
+            <option>Feedback / idea</option>
+            <option>Business / collab</option>
+          </select>
+        </div>
+        <div class="frow"><label for="message">Message</label><textarea id="message" name="message" required placeholder="What's up?"></textarea></div>
+        <button class="btn btn-p" type="submit" id="sendBtn">Send Message</button>
+        <div class="form-note" id="note"></div>
+      </form>
+    </div>
+    <div class="side-card">
+      <h3>Other ways to reach me</h3>
+      <div class="side-links">
+        <a href="https://discord.gg/zt7cKSUBTz" style="--ac:var(--purple)" target="_blank" rel="noopener">Discord — The Insane Asylum <b>JOIN</b></a>
+        <a href="https://www.youtube.com/@crackafpv" style="--ac:var(--pink)" target="_blank" rel="noopener">YouTube <b>@crackafpv</b></a>
+        <a href="https://twitch.tv/crackafpv" style="--ac:var(--cyan)" target="_blank" rel="noopener">Twitch <b>@crackafpv</b></a>
+        <a href="https://www.tiktok.com/@crackafpv" style="--ac:var(--pink)" target="_blank" rel="noopener">TikTok <b>@crackafpv</b></a>
+        <a href="https://hub.cracka.gg" style="--ac:var(--green)" target="_blank" rel="noopener">The Hub <b>cracka.gg</b></a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<footer class="foot"><div class="wrap">
+  <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
+  <div class="foot-links"><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a></div>
+  <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
+  <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
+</div></footer>
+<script>var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});</script>
+<script>
+(function(){
+  var WORKER="";  /* dashboard Worker base, e.g. https://cracka-dashboard.<sub>.workers.dev */
+  var FALLBACK_EMAIL="support@cracka.gg";
+  var f=document.getElementById('cform'),note=document.getElementById('note'),btn=document.getElementById('sendBtn');
+  function set(msg,cls){note.textContent=msg;note.className='form-note '+(cls||'');}
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=f.name.value.trim(),email=f.email.value.trim(),topic=f.topic.value,message=f.message.value.trim();
+    if(!name||!email||!message){set('Please fill in your name, email, and message.','err');return;}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){set('That email doesn\'t look right.','err');return;}
+    var payload={name:name,email:email,topic:topic,message:message,ts:new Date().toISOString()};
+    if(WORKER){
+      btn.disabled=true;set('Sending…','');
+      fetch(WORKER.replace(/\/$/,'')+"/api/contact",{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+        .then(function(r){if(!r.ok)throw 0;return r.json().catch(function(){return {};});})
+        .then(function(){f.reset();set('Message sent — thanks! I\'ll get back to you.','ok');})
+        .catch(function(){set('Send failed. Opening your email app instead…','err');mailto(payload);})
+        .finally(function(){btn.disabled=false;});
+    } else {
+      mailto(payload);
+      set('Opening your email app to send…','ok');
+    }
+  });
+  function mailto(p){
+    var sub=encodeURIComponent('[cracka.dev] '+p.topic+' — '+p.name);
+    var body=encodeURIComponent('From: '+p.name+' <'+p.email+'>\nTopic: '+p.topic+'\n\n'+p.message);
+    window.location.href='mailto:'+FALLBACK_EMAIL+'?subject='+sub+'&body='+body;
+  }
+})();
+</script>
+</body>
+</html>

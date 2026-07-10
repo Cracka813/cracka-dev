@@ -1,0 +1,23 @@
+name = "cracka-dashboard"
+main = "dashboard-worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+GH_REPO = "Cracka813/djcracka-suite"
+GH_FILE = "Cracka_Suite_License.json"
+GH_BRANCH = "main"
+ALLOW_ORIGIN = "https://cracka.dev"
+ADMIN_IDS = ""   # <- your Discord user ID(s), comma-separated
+
+# KV for license cache + fallback:
+#   wrangler kv namespace create DASH_KV   -> paste the id below
+[[kv_namespaces]]
+binding = "DASH_KV"
+id = "PASTE_KV_ID"
+
+# Secrets (set with: wrangler secret put NAME )
+#   DISCORD_CLIENT_ID
+#   DISCORD_CLIENT_SECRET
+#   SESSION_SECRET
+#   GH_TOKEN
+#   CONTACT_WEBHOOK   (optional - Make/Zoho webhook for contact + resend)
