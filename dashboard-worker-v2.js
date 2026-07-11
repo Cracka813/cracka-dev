@@ -62,12 +62,14 @@ function isAdmin(env, sess){
 }
 
 /* ── D1 helpers ── */
-const COLS = ['key','email','first_name','last_name','nickname','signup_date','active','tools','discord_username','discord_id','youtube','twitch','kick','tiktok','notes','last_login','last_updated','last_edit','login_count','is_test_account','referral_source','platform_origin','subscription_tier'];
+const COLS = ['key','email','first_name','last_name','nickname','signup_date','active','tools','discord_username','discord_id','youtube','twitch','kick','tiktok','notes','last_login','last_updated','last_edit','login_count','is_test_account','referral_source','platform_origin','subscription_tier','emails'];
 
 function rowToRec(row){
   if(!row) return null;
   let tools; try{ tools = JSON.parse(row.tools||'["all"]'); }catch(e){ tools = row.tools ? String(row.tools).split(',').map(s=>s.trim()).filter(Boolean) : ['all']; }
+  let emails; try{ emails = JSON.parse(row.emails||'[]'); }catch(e){ emails = []; }
   return {
+    emails: Array.isArray(emails)?emails:[],
     key: row.key, email: row.email||'', first_name: row.first_name||'', last_name: row.last_name||'',
     nickname: row.nickname||'', signup_date: row.signup_date||'', active: row.active !== 0,
     tools: (Array.isArray(tools)&&tools.length)?tools:['all'],
@@ -78,7 +80,7 @@ function rowToRec(row){
     referral_source: row.referral_source||'', platform_origin: row.platform_origin||'', subscription_tier: row.subscription_tier||''
   };
 }
-const BLANK = {key:'',email:'',first_name:'',last_name:'',nickname:'',signup_date:'',active:true,tools:['all'],discord_username:'',discord_id:'',youtube:'',twitch:'',kick:'',tiktok:'',notes:'',last_login:'',last_updated:'',last_edit:'',login_count:0,is_test_account:false,referral_source:'',platform_origin:'',subscription_tier:''};
+const BLANK = {key:'',email:'',first_name:'',last_name:'',nickname:'',signup_date:'',active:true,tools:['all'],discord_username:'',discord_id:'',youtube:'',twitch:'',kick:'',tiktok:'',notes:'',last_login:'',last_updated:'',last_edit:'',login_count:0,is_test_account:false,referral_source:'',platform_origin:'',subscription_tier:'',emails:[]};
 
 function recToBind(rec){
   const r = {...BLANK, ...rec};
@@ -88,7 +90,8 @@ function recToBind(rec){
     JSON.stringify((Array.isArray(r.tools)&&r.tools.length)?r.tools:['all']),
     r.discord_username, r.discord_id, r.youtube, r.twitch, r.kick, r.tiktok, r.notes,
     r.last_login, r.last_updated, r.last_edit, (r.login_count||0),
-    (r.is_test_account ? 1 : 0), r.referral_source, r.platform_origin, r.subscription_tier
+    (r.is_test_account ? 1 : 0), r.referral_source, r.platform_origin, r.subscription_tier,
+    JSON.stringify(Array.isArray(r.emails)?r.emails:[])
   ];
 }
 async function d1All(env){
@@ -123,7 +126,14 @@ async function sha256hex(s){
 async function publicFeed(list){
   return Promise.all(list.map(async x => {
     const e = { key:x.key, active: x.active !== false, tools: (x.tools&&x.tools.length)?x.tools:['all'] };
-    if(x.email) e.email_hash = await sha256hex(String(x.email).trim().toLowerCase() + '|' + x.key);
+    // every login email (primary + any alts in emails[]) → its own hash; no plaintext ever public
+    const all = [x.email, ...(Array.isArray(x.emails)?x.emails:[])].filter(Boolean);
+    if(all.length){
+      const hashes = [];
+      for(const em of all){ hashes.push(await sha256hex(String(em).trim().toLowerCase() + '|' + x.key)); }
+      e.email_hash = hashes[0];      // primary (backward compatible)
+      e.email_hashes = hashes;       // all valid login emails
+    }
     return e;
   }));
 }
