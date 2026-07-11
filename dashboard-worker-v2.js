@@ -140,7 +140,42 @@ async function publishKeysOnly(env){
   return r.ok;
 }
 
+/* ── Off-Cloudflare backup: full D1 records → PRIVATE repo (dated, keep N) ── */
+async function doBackup(env){
+  if(!env.BACKUP_REPO) return {ok:false, error:'BACKUP_REPO not set'};
+  const token = env.BACKUP_TOKEN || env.GH_TOKEN;
+  const branch = env.BACKUP_BRANCH || 'main';
+  const list = await d1All(env);
+  const stamp = new Date().toISOString().slice(0,10);
+  const path = `customers/Cracka_Customers_${stamp}.json`;
+  const payload = { generatedAt: new Date().toISOString(), count: list.length, records: list };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const H = {'Authorization':`Bearer ${token}`,'Accept':'application/vnd.github+json','User-Agent':'cracka-dash','Content-Type':'application/json'};
+  const fileUrl = `https://api.github.com/repos/${env.BACKUP_REPO}/contents/${path}`;
+  let sha; try{ const g = await fetch(fileUrl+`?ref=${branch}`,{headers:H}); if(g.ok){ sha=(await g.json()).sha; } }catch(e){}
+  const body = {message:`customer DB backup ${stamp} (${list.length} records)`, content, branch};
+  if(sha) body.sha = sha;
+  const r = await fetch(fileUrl,{method:'PUT',headers:H,body:JSON.stringify(body)});
+  if(!r.ok) return {ok:false, status:r.status, error:(await r.text()).slice(0,200)};
+  // prune: keep the newest N dated files (best-effort)
+  try{
+    const keep = parseInt(env.BACKUP_KEEP||'30',10);
+    const lr = await fetch(`https://api.github.com/repos/${env.BACKUP_REPO}/contents/customers?ref=${branch}`,{headers:H});
+    if(lr.ok){
+      const files = (await lr.json()).filter(f=>/^Cracka_Customers_.*\.json$/.test(f.name)).sort((a,b)=>a.name<b.name?1:-1);
+      for(const f of files.slice(keep)){
+        await fetch(`https://api.github.com/repos/${env.BACKUP_REPO}/contents/${f.path}`,{method:'DELETE',headers:H,
+          body:JSON.stringify({message:`prune old backup ${f.name}`, sha:f.sha, branch})});
+      }
+    }
+  }catch(e){}
+  return {ok:true, path, count:list.length};
+}
+
 export default {
+  async scheduled(event, env, ctx){
+    ctx.waitUntil(doBackup(env));
+  },
   async fetch(request, env){
     const url = new URL(request.url);
     const p = url.pathname;
@@ -233,6 +268,14 @@ export default {
       await d1Upsert(env, merged);
       await publishKeysOnly(env);
       return json(env,{ok:true, key:rec.key});
+    }
+
+    /* ── Manual backup trigger (secret-gated) — same job the daily cron runs ── */
+    if(p === '/api/backup-now' && request.method === 'POST'){
+      if(!env.ISSUE_SECRET || request.headers.get('X-Issue-Key') !== env.ISSUE_SECRET)
+        return json(env,{error:'unauthorized'},403);
+      const res = await doBackup(env);
+      return json(env, res, res.ok ? 200 : 500);
     }
 
     if(p === '/api/resend' && request.method === 'POST'){
