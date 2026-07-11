@@ -40,6 +40,7 @@ table.dt th{text-align:left;font-family:'Share Tech Mono';font-weight:400;letter
 table.dt td{padding:11px 12px;border-bottom:1px solid var(--line);color:var(--txt);vertical-align:middle}
 table.dt tr:hover td{background:rgba(255,255,255,.03)}
 .mono{font-family:'Share Tech Mono';color:var(--cyan)}
+td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.6}
 .pill{display:inline-block;font-family:'Share Tech Mono';font-size:11px;letter-spacing:1px;padding:3px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
 .pill.on{color:var(--green);border-color:var(--green);background:rgba(0,255,50,.08)}
 .pill.off{color:var(--pink);border-color:var(--pink);background:rgba(255,32,121,.08)}
@@ -98,7 +99,7 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
     <div class="stat" style="--ac:var(--yellow)"><div class="lbl">Pending</div><div class="num" id="s-pending">—</div></div>
   </div>
 
-  <div class="notice" id="apiNotice">// Admin API not connected — you can view, search, and export licenses. To <b>log in with Discord</b> and enable issue / revoke / edit / resend, deploy the dashboard Worker and set its URL in this page (see README).</div>
+  <div class="notice" id="apiNotice">// Customer details are <b>private</b>. You're viewing the public keys feed — names, emails and Discord handles are hidden. <b>Log in with Discord</b> (admin only) to view full records and issue / revoke / edit / resend.</div>
 
   <div class="panel">
     <div class="toolbar">
@@ -128,7 +129,7 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <h3 id="mTitle">Edit license</h3>
-    <div class="mh" id="mSub">// changes are written to GitHub + KV</div>
+    <div class="mh" id="mSub">// changes are written to the private license store</div>
     <div class="mrow"><label>License key</label><input id="m-key" placeholder="CRACKA-XXXXXXXX"></div>
     <div class="mrow2">
       <div class="mrow"><label>First name</label><input id="m-first"></div>
@@ -162,15 +163,20 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
 (function(){
   var GH="https://raw.githubusercontent.com/Cracka813/djcracka-suite/main/Cracka_Suite_License.json";
   var WORKER="https://cracka-dashboard.lbaxley69.workers.dev";  /* dashboard Worker base, e.g. https://cracka-dashboard.<sub>.workers.dev */
-  var DATA=[], SOURCE="", ADMIN=false, editingKey=null;
+  var DATA=[], SOURCE="", ADMIN=false, FULL=false, editingKey=null;
   var $=function(id){return document.getElementById(id);};
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function statusPill(x){return !x.active?'<span class="pill off">disabled</span>':(x.discord_id?'<span class="pill on">redeemed</span>':'<span class="pill wait">pending</span>');}
   function stats(){
     $('s-total').textContent=DATA.length;
-    $('s-active').textContent=DATA.filter(function(x){return x.active;}).length;
-    $('s-redeemed').textContent=DATA.filter(function(x){return x.discord_id;}).length;
-    $('s-pending').textContent=DATA.filter(function(x){return x.active&&!x.discord_id;}).length;
+    $('s-active').textContent=DATA.filter(function(x){return x.active!==false;}).length;
+    if(FULL){
+      $('s-redeemed').textContent=DATA.filter(function(x){return x.discord_id;}).length;
+      $('s-pending').textContent=DATA.filter(function(x){return x.active!==false&&!x.discord_id;}).length;
+    }else{
+      $('s-redeemed').textContent='🔒';
+      $('s-pending').textContent='🔒';
+    }
   }
   function visible(){
     var q=$('q').value.trim().toLowerCase(), f=$('filter').value;
@@ -187,6 +193,18 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
     stats();
     var list=visible(), tb=$('rows');
     if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty">No matching licenses.</td></tr>';return;}
+    if(!FULL){
+      tb.innerHTML=list.map(function(x){
+        return '<tr>'
+          +'<td class="mono">'+esc(x.key)+'</td>'
+          +'<td class="lk">&#128274;</td><td class="lk">&#128274;</td><td class="lk">&#128274;</td>'
+          +'<td class="lk">&mdash;</td><td class="lk">&mdash;</td>'
+          +'<td>'+(x.active!==false?'<span class="pill on">active</span>':'<span class="pill off">disabled</span>')+'</td>'
+          +'<td><div class="act"><button class="iact" title="Copy key" onclick="__copy(\''+esc(x.key)+'\')">&#9112;</button></div></td>'
+        +'</tr>';
+      }).join('');
+      return;
+    }
     tb.innerHTML=list.map(function(x){
       var name=[x.first_name,x.last_name].filter(Boolean).join(' ')||x.nickname||'—';
       var dis=x.discord_username||(x.discord_id?x.discord_id:'—');
@@ -209,25 +227,31 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
     }).join('');
   }
   function srcline(){
-    var live=SOURCE==='github';
-    $('srcline').innerHTML='<span class="dot-live '+(live?'':'dot-cache')+'"></span>Source: '+(live?'GitHub (live)':(SOURCE==='kv'?'Cloudflare KV (fallback)':'unavailable'));
+    if(SOURCE==='worker'){$('srcline').innerHTML='<span class="dot-live"></span>Source: Admin API — full records (private, admin session)';}
+    else if(SOURCE==='public'){$('srcline').innerHTML='<span class="dot-live dot-cache"></span>Source: Public keys feed — customer details are hidden. Log in with Discord to view.';}
+    else{$('srcline').innerHTML='<span class="dot-live dot-cache"></span>Source: unavailable';}
+  }
+  function loadPublic(){
+    FULL=false;
+    fetch(GH,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){DATA=Array.isArray(j)?j:[];SOURCE='public';render();srcline();})
+      .catch(function(){SOURCE='';$('rows').innerHTML='<tr><td colspan="8" class="empty">Couldn\'t load license data.</td></tr>';srcline();});
   }
   function load(){
-    fetch(GH,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
-      .then(function(j){DATA=Array.isArray(j)?j:[];SOURCE='github';render();srcline();})
-      .catch(function(){
-        if(!WORKER){DATA=[];SOURCE='';$('rows').innerHTML='<tr><td colspan="8" class="empty">Couldn\'t load license data.</td></tr>';srcline();return;}
-        fetch(WORKER.replace(/\/$/,'')+'/api/licenses').then(function(r){if(!r.ok)throw 0;return r.json();})
-          .then(function(j){DATA=Array.isArray(j)?j:(j.licenses||[]);SOURCE='kv';render();srcline();})
-          .catch(function(){SOURCE='';$('rows').innerHTML='<tr><td colspan="8" class="empty">Couldn\'t load license data.</td></tr>';srcline();});
-      });
+    if(ADMIN&&WORKER){
+      fetch(WORKER.replace(/\/$/,'')+'/api/licenses',{credentials:'include'})
+        .then(function(r){if(!r.ok)throw 0;return r.json();})
+        .then(function(j){DATA=Array.isArray(j)?j:[];FULL=true;SOURCE='worker';render();srcline();})
+        .catch(function(){loadPublic();});
+    }else{loadPublic();}
   }
   function checkSession(){
-    if(!WORKER)return;
+    if(!WORKER){load();return;}
     fetch(WORKER.replace(/\/$/,'')+'/api/me',{credentials:'include'}).then(function(r){return r.ok?r.json():null;})
       .then(function(u){if(u&&u.admin){ADMIN=true;$('apiNotice').classList.add('hide');$('issueBtn').disabled=false;
-        $('who').innerHTML='Signed in as <b>'+esc(u.username||'admin')+'</b>';$('loginBtn').textContent='Logout';render();}})
-      .catch(function(){});
+        $('who').innerHTML='Signed in as <b>'+esc(u.username||'admin')+'</b>';$('loginBtn').textContent='Logout';}
+        load();})
+      .catch(function(){load();});
   }
   window.__copy=function(k){navigator.clipboard&&navigator.clipboard.writeText(k);var w=$('who');var o=w.innerHTML;w.innerHTML='Copied <b>'+esc(k)+'</b>';setTimeout(function(){w.innerHTML=o;},1400);};
   window.__edit=function(k){if(!ADMIN)return;openModal(k);};
@@ -271,11 +295,11 @@ table.dt tr:hover td{background:rgba(255,255,255,.03)}
   $('q').addEventListener('input',render);
   $('filter').addEventListener('change',render);
   $('csvBtn').onclick=function(){
-    var cols=['key','first_name','last_name','email','discord_username','discord_id','signup_date','active','login_count','notes'];
+    var cols=FULL?['key','first_name','last_name','email','discord_username','discord_id','signup_date','active','login_count','notes']:['key','active','tools'];
     var out=[cols.join(',')].concat(DATA.map(function(x){return cols.map(function(c){var v=x[c]==null?'':String(x[c]);return '"'+v.replace(/"/g,'""')+'"';}).join(',');})).join('\n');
     var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(out);a.download='cracka_licenses.csv';a.click();
   };
-  load();checkSession();
+  checkSession();
 })();
 </script>
 </body>
