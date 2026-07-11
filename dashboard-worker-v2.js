@@ -113,8 +113,19 @@ async function d1Upsert(env, rec){
 }
 
 /* ── Public keys-only feed → GitHub (tools + bots read this) ── */
-function publicFeed(list){
-  return list.map(x => ({ key:x.key, active: x.active !== false, tools: (x.tools&&x.tools.length)?x.tools:['all'] }));
+async function sha256hex(s){
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(s));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+/* Public keys-only feed. email_hash = SHA-256( lower(trim(email)) + '|' + key ) so the
+ * offline Client Portal can verify a customer's own email+key WITHOUT any plaintext email
+ * ever appearing publicly. Plaintext email stays in D1 only. */
+async function publicFeed(list){
+  return Promise.all(list.map(async x => {
+    const e = { key:x.key, active: x.active !== false, tools: (x.tools&&x.tools.length)?x.tools:['all'] };
+    if(x.email) e.email_hash = await sha256hex(String(x.email).trim().toLowerCase() + '|' + x.key);
+    return e;
+  }));
 }
 async function ghGet(env){
   const url = `https://api.github.com/repos/${env.GH_REPO}/contents/${env.GH_FILE}?ref=${env.GH_BRANCH||'main'}`;
@@ -126,7 +137,7 @@ async function ghGet(env){
 async function publishKeysOnly(env){
   if(!env.GH_TOKEN || !env.GH_REPO || !env.GH_FILE) return;
   const list = await d1All(env);
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(publicFeed(list), null, 2))));
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(await publicFeed(list), null, 2))));
   const url = `https://api.github.com/repos/${env.GH_REPO}/contents/${env.GH_FILE}`;
   const H = {'Authorization':`Bearer ${env.GH_TOKEN}`,'Accept':'application/vnd.github+json','User-Agent':'cracka-dash','Content-Type':'application/json'};
   async function attempt(){
@@ -246,9 +257,16 @@ export default {
       return json(env,{ok:true, key:rec.key});
     }
 
-    /* ── Public keys-only feed (safe; NO PII) ── */
+    /* ── Public keys-only feed (safe; NO PII — key/active/tools + email_hash) ── */
     if(p === '/api/public' && request.method === 'GET'){
-      return json(env, publicFeed(await d1All(env)));
+      return json(env, await publicFeed(await d1All(env)));
+    }
+
+    /* ── Full-record export (secret-gated) — for the admin License Manager desktop tool ── */
+    if(p === '/api/export' && request.method === 'GET'){
+      if(!env.ISSUE_SECRET || request.headers.get('X-Issue-Key') !== env.ISSUE_SECRET)
+        return json(env,{error:'unauthorized'},403);
+      return json(env, await d1All(env));
     }
 
     /* ── Machine-to-machine issue (Make.com → after a Fourthwall Suite purchase) ── */
