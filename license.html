@@ -41,6 +41,13 @@ table.dt td{padding:11px 12px;border-bottom:1px solid var(--line);color:var(--tx
 table.dt tr:hover td{background:rgba(255,255,255,.03)}
 .mono{font-family:'Share Tech Mono';color:var(--cyan)}
 td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.6}
+.mycard{background:var(--glass);border:1px solid var(--line-strong);border-radius:16px;padding:26px 28px;margin-top:6px}
+.mycard h3{font-family:'Orbitron';font-size:22px;color:#fff;margin:0 0 4px}
+.mycard .mk{font-family:'Share Tech Mono';color:var(--cyan);font-size:18px;letter-spacing:1px;margin-bottom:18px}
+.mycard .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 26px}
+.mycard .f{border-bottom:1px solid var(--line);padding-bottom:8px}
+.mycard .f .l{font-family:'Share Tech Mono';font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.mycard .f .v{font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--txt)}
 .pill{display:inline-block;font-family:'Share Tech Mono';font-size:11px;letter-spacing:1px;padding:3px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
 .pill.on{color:var(--green);border-color:var(--green);background:rgba(0,255,50,.08)}
 .pill.off{color:var(--pink);border-color:var(--pink);background:rgba(255,32,121,.08)}
@@ -113,14 +120,16 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
       <button class="tbtn discord" id="loginBtn">Login with Discord</button>
       <button class="tbtn g" id="issueBtn" disabled>+ Issue Key</button>
       <button class="tbtn" id="csvBtn">Export CSV</button>
+      <button class="tbtn g" id="xlsxBtn" style="display:none">Export Excel</button>
       <span class="who" id="who"></span>
     </div>
-    <div style="overflow-x:auto">
+    <div id="tableWrap" style="overflow-x:auto">
       <table class="dt">
         <thead><tr><th>Key</th><th>Name</th><th>Email</th><th>Discord</th><th>Signed up</th><th>Logins</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="rows"><tr><td colspan="8" class="empty">Loading license data…</td></tr></tbody>
       </table>
     </div>
+    <div id="myLicense" class="mycard" style="display:none"></div>
     <div class="srcline" id="srcline"></div>
   </div>
 
@@ -159,11 +168,12 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
   <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
 </div></footer>
 <script>var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
 (function(){
   var GH="https://raw.githubusercontent.com/Cracka813/djcracka-suite/main/Cracka_Suite_License.json";
   var WORKER="https://cracka-dashboard.lbaxley69.workers.dev";  /* dashboard Worker base, e.g. https://cracka-dashboard.<sub>.workers.dev */
-  var DATA=[], SOURCE="", ADMIN=false, FULL=false, editingKey=null;
+  var DATA=[], SOURCE="", ADMIN=false, FULL=false, MODE='public', editingKey=null;
   var $=function(id){return document.getElementById(id);};
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function statusPill(x){return !x.active?'<span class="pill off">disabled</span>':(x.discord_id?'<span class="pill on">redeemed</span>':'<span class="pill wait">pending</span>');}
@@ -227,7 +237,8 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
     }).join('');
   }
   function srcline(){
-    if(SOURCE==='worker'){$('srcline').innerHTML='<span class="dot-live"></span>Source: Admin API — full records (private, admin session)';}
+    if(SOURCE==='worker'&&MODE==='admin'){$('srcline').innerHTML='<span class="dot-live"></span>Source: Admin API — full records (Cloudflare D1, private)';}
+    else if(SOURCE==='worker'&&MODE==='customer'){$('srcline').innerHTML='<span class="dot-live"></span>Source: your own license record (private)';}
     else if(SOURCE==='public'){$('srcline').innerHTML='<span class="dot-live dot-cache"></span>Source: Public keys feed — customer details are hidden. Log in with Discord to view.';}
     else{$('srcline').innerHTML='<span class="dot-live dot-cache"></span>Source: unavailable';}
   }
@@ -237,21 +248,65 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
       .then(function(j){DATA=Array.isArray(j)?j:[];SOURCE='public';render();srcline();})
       .catch(function(){SOURCE='';$('rows').innerHTML='<tr><td colspan="8" class="empty">Couldn\'t load license data.</td></tr>';srcline();});
   }
+  function applyMode(){
+    var admin = MODE==='admin', cust = MODE==='customer';
+    $('tableWrap').style.display   = admin ? '' : (cust ? 'none' : '');
+    $('myLicense').style.display   = cust ? 'block' : 'none';
+    $('q').style.display           = admin ? '' : 'none';
+    $('filter').style.display      = admin ? '' : 'none';
+    $('csvBtn').style.display      = admin ? '' : 'none';
+    $('xlsxBtn').style.display     = admin ? '' : 'none';
+    $('issueBtn').style.display    = admin ? '' : 'none';
+    document.querySelector('.stat-grid').style.display = cust ? 'none' : '';
+  }
+  function renderCustomer(){
+    var x = DATA[0];
+    if(!x){ $('myLicense').innerHTML = '<h3>No license on this account</h3><div class="mk">No Cracka Suite license is linked to your Discord yet.</div><div class="f"><div class="v">If you just purchased, give it a minute — or contact support from the Contact page.</div></div>'; return; }
+    var name=[x.first_name,x.last_name].filter(Boolean).join(' ')||x.nickname||'—';
+    var tools=(x.tools&&x.tools.length)?x.tools.join(', '):'all';
+    var status = x.active===false ? '<span class="pill off">disabled</span>' : (x.discord_id?'<span class="pill on">active</span>':'<span class="pill wait">pending</span>');
+    function f(l,v){return '<div class="f"><div class="l">'+l+'</div><div class="v">'+v+'</div></div>';}
+    $('myLicense').innerHTML =
+      '<h3>My License</h3><div class="mk">'+esc(x.key)+'</div>'+
+      '<div class="grid">'+
+        f('Status', status)+
+        f('Tools', esc(tools))+
+        f('Name', esc(name))+
+        f('Email', esc(x.email||'—'))+
+        f('Signed up', esc(x.signup_date||'—'))+
+        f('Plan', esc(x.subscription_tier||'Suite'))+
+        f('Logins', String(x.login_count||0))+
+        f('Last login', esc(x.last_login||'—'))+
+      '</div>'+
+      '<div class="mactions" style="margin-top:22px"><button class="tbtn" onclick="__copy(\''+esc(x.key)+'\')">Copy my key</button></div>';
+  }
   function load(){
-    if(ADMIN&&WORKER){
+    if(MODE==='admin'){
       fetch(WORKER.replace(/\/$/,'')+'/api/licenses',{credentials:'include'})
         .then(function(r){if(!r.ok)throw 0;return r.json();})
         .then(function(j){DATA=Array.isArray(j)?j:[];FULL=true;SOURCE='worker';render();srcline();})
-        .catch(function(){loadPublic();});
+        .catch(function(){MODE='public';applyMode();loadPublic();});
+    }else if(MODE==='customer'){
+      fetch(WORKER.replace(/\/$/,'')+'/api/licenses',{credentials:'include'})
+        .then(function(r){if(!r.ok)throw 0;return r.json();})
+        .then(function(j){DATA=Array.isArray(j)?j:[];SOURCE='worker';renderCustomer();srcline();})
+        .catch(function(){MODE='public';applyMode();loadPublic();});
     }else{loadPublic();}
   }
   function checkSession(){
     if(!WORKER){load();return;}
     fetch(WORKER.replace(/\/$/,'')+'/api/me',{credentials:'include'}).then(function(r){return r.ok?r.json():null;})
-      .then(function(u){if(u&&u.admin){ADMIN=true;$('apiNotice').classList.add('hide');$('issueBtn').disabled=false;
-        $('who').innerHTML='Signed in as <b>'+esc(u.username||'admin')+'</b>';$('loginBtn').textContent='Logout';}
-        load();})
-      .catch(function(){load();});
+      .then(function(u){
+        if(u&&u.admin){ ADMIN=true; MODE='admin';
+          $('apiNotice').classList.add('hide'); $('issueBtn').disabled=false;
+          $('who').innerHTML='Signed in as <b>'+esc(u.username||'admin')+'</b>'; $('loginBtn').textContent='Logout';
+        }else if(u&&u.authed){ MODE='customer';
+          $('apiNotice').innerHTML='// Signed in. You\'re viewing <b>your own license</b> only. Admins see all records.';
+          $('who').innerHTML='Signed in as <b>'+esc(u.username||'you')+'</b>'; $('loginBtn').textContent='Logout';
+        }else{ MODE='public'; }
+        applyMode(); load();
+      })
+      .catch(function(){ MODE='public'; applyMode(); load(); });
   }
   window.__copy=function(k){navigator.clipboard&&navigator.clipboard.writeText(k);var w=$('who');var o=w.innerHTML;w.innerHTML='Copied <b>'+esc(k)+'</b>';setTimeout(function(){w.innerHTML=o;},1400);};
   window.__edit=function(k){if(!ADMIN)return;openModal(k);};
@@ -298,6 +353,62 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
     var cols=FULL?['key','first_name','last_name','email','discord_username','discord_id','signup_date','active','login_count','notes']:['key','active','tools'];
     var out=[cols.join(',')].concat(DATA.map(function(x){return cols.map(function(c){var v=x[c]==null?'':String(x[c]);return '"'+v.replace(/"/g,'""')+'"';}).join(',');})).join('\n');
     var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(out);a.download='cracka_licenses.csv';a.click();
+  };
+  /* Styled Excel export (admin) — banner + Licenses sheet + Summary tab, suite palette */
+  $('xlsxBtn').onclick=function(){
+    if(typeof ExcelJS==='undefined'){flash('Excel engine still loading…');return;}
+    var wb=new ExcelJS.Workbook(); wb.creator='DJ Cracka Software Suite';
+    var INK='FF0C0C17', GREEN='FF00FF32', PURPLE='FFB400FF', CYAN='FF00FFFF', MUT='FF9AA0B4';
+    var ws=wb.addWorksheet('Licenses',{views:[{state:'frozen',ySplit:4}]});
+    var cols=[['key','License Key',20],['first_name','First',14],['last_name','Last',14],['email','Email',26],
+              ['discord_username','Discord',18],['discord_id','Discord ID',20],['signup_date','Signed Up',14],
+              ['active','Active',10],['login_count','Logins',9],['tools','Tools',18],['notes','Notes',30]];
+    ws.columns=cols.map(function(c){return {key:c[0],width:c[2]};});
+    var last=String.fromCharCode(64+cols.length);
+    // Banner row
+    ws.mergeCells('A1:'+last+'1'); var b1=ws.getCell('A1');
+    b1.value='D J   C R A C K A   S O F T W A R E   S U I T E   —   L I C E N S E   E X P O R T';
+    b1.font={name:'Consolas',bold:true,size:15,color:{argb:GREEN}}; b1.alignment={horizontal:'center',vertical:'middle'};
+    b1.fill={type:'pattern',pattern:'solid',fgColor:{argb:INK}}; ws.getRow(1).height=30;
+    // Subtitle row
+    ws.mergeCells('A2:'+last+'2'); var b2=ws.getCell('A2');
+    b2.value='cracka.dev  ·  generated '+new Date().toISOString().slice(0,19).replace('T',' ')+' UTC  ·  '+DATA.length+' records';
+    b2.font={name:'Consolas',size:10,color:{argb:CYAN}}; b2.alignment={horizontal:'center'};
+    b2.fill={type:'pattern',pattern:'solid',fgColor:{argb:INK}};
+    ws.getRow(3).height=6;
+    // Header row (row 4)
+    var hdr=ws.getRow(4); cols.forEach(function(c,i){var cell=hdr.getCell(i+1);cell.value=c[1];
+      cell.font={bold:true,size:10,color:{argb:'FFFFFFFF'}}; cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:PURPLE}};
+      cell.alignment={horizontal:'left'}; cell.border={bottom:{style:'thin',color:{argb:MUT}}};});
+    hdr.height=18;
+    // Data rows
+    DATA.forEach(function(x){
+      ws.addRow({key:x.key,first_name:x.first_name||'',last_name:x.last_name||'',email:x.email||'',
+        discord_username:x.discord_username||'',discord_id:x.discord_id||'',signup_date:x.signup_date||'',
+        active:(x.active===false?'No':'Yes'),login_count:x.login_count||0,
+        tools:(x.tools&&x.tools.length)?x.tools.join(', '):'all',notes:x.notes||''});
+    });
+    // Footer signature
+    var fr=ws.addRow([]); ws.mergeCells('A'+(fr.number+1)+':'+last+(fr.number+1));
+    var fc=ws.getCell('A'+(fr.number+1)); fc.value='Cyberpunk Vibe — 4:20 Midnight Edition   ·   © 2026 DJ Cracka Software Suite';
+    fc.font={name:'Consolas',italic:true,size:9,color:{argb:MUT}}; fc.alignment={horizontal:'center'};
+    // Summary tab
+    var sm=wb.addWorksheet('Summary'); sm.columns=[{width:26},{width:16}];
+    sm.mergeCells('A1:B1'); var s1=sm.getCell('A1'); s1.value='LICENSE SUMMARY';
+    s1.font={name:'Consolas',bold:true,size:14,color:{argb:GREEN}}; s1.fill={type:'pattern',pattern:'solid',fgColor:{argb:INK}};
+    s1.alignment={horizontal:'center'}; sm.getRow(1).height=26;
+    var active=DATA.filter(function(x){return x.active!==false;}).length;
+    var redeemed=DATA.filter(function(x){return x.discord_id;}).length;
+    var rows=[['Total licenses',DATA.length],['Active',active],['Redeemed',redeemed],['Pending',active-redeemed],
+              ['Generated (UTC)',new Date().toISOString().slice(0,19).replace('T',' ')]];
+    rows.forEach(function(r){var row=sm.addRow(r); row.getCell(1).font={bold:true,color:{argb:CYAN}}; row.getCell(2).font={color:{argb:'FFFFFFFF'}};});
+    wb.xlsx.writeBuffer().then(function(buf){
+      var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='Cracka_Licenses_'+new Date().toISOString().slice(0,10)+'.xlsx'; a.click();
+      setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+      flash('Excel exported ('+DATA.length+' records)');
+    }).catch(function(){flash('Excel export failed');});
   };
   checkSession();
 })();
