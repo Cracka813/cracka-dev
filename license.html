@@ -11,6 +11,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Chakra+Petch:wght@600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://hub.cracka.gg/style.css">
 <style>
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(rgba(6,6,12,.55),rgba(6,6,12,.55)),radial-gradient(ellipse at 50% 42%,transparent 40%,rgba(6,6,12,.5) 86%),#000 url(https://mori.cracka.gg/assets/crown_bg_dark.jpg) center/cover no-repeat}
+body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 40%,transparent 85%)}
+@property --gswa{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes gswa{to{--gswa:360deg}}
+.gs-tile{position:relative;border-radius:16px;background:rgba(8,14,9,.5);border:1px solid #00ff32;box-shadow:0 0 14px rgba(0,255,50,.15);padding:30px 26px;margin:8px auto}
+.gs-tile::before{content:"";position:absolute;inset:-2px;border-radius:18px;padding:1.5px;z-index:-1;pointer-events:none;background:conic-gradient(from var(--gswa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.55;animation:gswa 9s linear infinite}
+select option{background:#0b0b17}
+</style>
+<style>
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:30px}
 .stat{background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
 .stat::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--ac,var(--cyan));opacity:.9}
@@ -88,6 +97,7 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
     <a href="about.html">About</a>
     <a href="license.html" class="active">License</a>
     <a href="contact.html">Contact</a>
+    <a href="https://mori.cracka.dev">Mori&nbsp;Bot</a>
   </nav>
 </div></header>
 
@@ -97,7 +107,7 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
   <p>Overview of every Cracka Suite key — issue, revoke, edit, and resend, all from one neon panel.</p>
 </div></div>
 
-<section><div class="wrap">
+<section><div class="wrap gs-tile">
 
   <div class="stat-grid">
     <div class="stat" style="--ac:var(--cyan)"><div class="lbl">Total Licenses</div><div class="num" id="s-total">—</div></div>
@@ -161,9 +171,80 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
   </div>
 </div>
 
+<!-- ===== MORI SUITE — STANDARD DISCORD JOIN BANNER (portable, self-contained) ===== -->
+<div id="join" class="mj-sec">
+  <style>
+  @property --mjwa{syntax:'<angle>';initial-value:0deg;inherits:false}
+  @keyframes mjwa{to{--mjwa:360deg}}
+  @keyframes mjwv{to{background-position:300% 0}}
+  @keyframes mjbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes mjpl{50%{opacity:.35}}
+  .mj-sec{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+  .mj-pin{position:relative;border-radius:14px;overflow:hidden;isolation:isolate;display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+    padding:22px 24px;min-height:130px;border:1px solid #1c4a28;box-shadow:0 0 12px rgba(0,255,50,.22);transition:.16s;
+    font-family:'JetBrains Mono','Share Tech Mono',ui-monospace,monospace}
+  .mj-pin::before{content:"";position:absolute;inset:-2px;border-radius:16px;padding:1.5px;z-index:0;pointer-events:none;
+    background:conic-gradient(from var(--mjwa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.6;animation:mjwa 9s linear infinite}
+  .mj-pin::after{content:"";position:absolute;inset:-2px;border-radius:16px;z-index:-1;pointer-events:none;
+    background:conic-gradient(from var(--mjwa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);filter:blur(13px);opacity:.24;animation:mjwa 9s linear infinite}
+  .mj-pin:hover{border-color:var(--mjhl,#00ffff);box-shadow:0 0 26px var(--mjhl,#00ffff)}
+  .mj-pin .mj-bgvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .mj-pin .mj-veil{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(5,8,16,.62),rgba(5,10,8,.28))}
+  .mj-pin > *:not(.mj-bgvid):not(.mj-veil){position:relative;z-index:3}
+  .mj-ico{width:60px;height:60px;border-radius:16px;flex:none;object-fit:cover;border:2px solid rgba(255,255,255,.85);
+    box-shadow:0 0 22px rgba(0,255,50,.5);animation:mjbob 3.4s ease-in-out infinite}
+  .mj-meta{flex:1;min-width:200px}
+  .mj-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#cfe9d6}
+  .mj-name{font-size:21px;font-weight:800;margin:2px 0 4px;text-shadow:0 2px 12px rgba(0,0,0,.7);
+    background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:mjwv 7s linear infinite}
+  .mj-res{display:flex;align-items:center;gap:14px;color:#cfe9d6;font-size:12px;flex-wrap:wrap}.mj-res span{display:inline-flex;align-items:center;gap:6px}
+  .mj-live{width:9px;height:9px;border-radius:50%;background:#00ff32;box-shadow:0 0 9px #00ff32;animation:mjpl 1.8s ease-in-out infinite}
+  .mj-off{width:9px;height:9px;border-radius:50%;background:#5f8f6d}
+  .mj-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:800;
+    letter-spacing:1.5px;font-size:13px;border:1px solid #00ff32;color:#04120a;background:#00ff32;box-shadow:0 0 22px rgba(0,255,50,.5);
+    cursor:pointer;transition:.15s;white-space:nowrap;font-family:'JetBrains Mono','Share Tech Mono',ui-monospace,monospace}
+  .mj-btn:hover{transform:translateY(-2px);background:var(--mjhl,#00ffff);border-color:var(--mjhl,#00ffff);box-shadow:0 0 30px var(--mjhl,#00ffff)}
+  </style>
+  <div class="mj-pin">
+    <video class="mj-bgvid" autoplay muted loop playsinline poster="https://mori.cracka.gg/assets/tunnel_poster.jpg">
+      <source src="https://mori.cracka.gg/assets/tunnel_loop.mp4" type="video/mp4">
+    </video>
+    <div class="mj-veil"></div>
+    <img class="mj-ico" src="https://cdn.discordapp.com/icons/744603068162769010/a_761386876b771897c827109ce4f683ce.gif?size=128" alt="The Insane Asylum">
+    <div class="mj-meta">
+      <div class="mj-label">You've been invited to join</div>
+      <div class="mj-name">THE INSANE ASYLUM</div>
+      <div class="mj-res">
+        <span><span class="mj-live"></span> 26 online</span>
+        <span><span class="mj-off"></span> 102 members</span>
+        <span>Cracka FPV &middot; live music, games &amp; mayhem</span>
+      </div>
+    </div>
+    <a class="mj-btn" href="https://discord.gg/zt7cKSUBTz" target="_blank" rel="noopener">JOIN SERVER &rsaquo;</a>
+  </div>
+  <script>
+  (function(){
+    var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
+    document.querySelectorAll('.mj-pin').forEach(function(el){
+      el.addEventListener('mouseenter',function(){
+        var p=PAL.filter(function(c){return c!=='#00ff32';});
+        el.style.setProperty('--mjhl',p[Math.floor(Math.random()*p.length)]);
+      });
+    });
+    document.querySelectorAll('.mj-pin img,.mj-pin video').forEach(function(m){
+      m.setAttribute('draggable','false');
+      m.addEventListener('contextmenu',function(e){e.preventDefault();});
+    });
+  })();
+  </script>
+</div>
+<!-- ===== END JOIN BANNER ===== -->
+
 <footer class="foot"><div class="wrap">
   <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
-  <div class="foot-links"><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a></div>
+  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
   <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
   <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
 </div></footer>
@@ -413,5 +494,18 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
   checkSession();
 })();
 </script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
+document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
+var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
+</script>
+<script>
+/* Dropdown option text — random of 5 suite hex, no adjacent repeat */
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
+document.querySelectorAll('select').forEach(function(sel){var prev=null;
+sel.querySelectorAll('option').forEach(function(o){var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;
+var c=pool[Math.floor(Math.random()*pool.length)];o.style.color=c;prev=c;});sel.style.color='#eafff0';});})();
+</script>
 </body>
 </html>
+ 
