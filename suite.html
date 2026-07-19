@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Suite — Cracka.dev</title>
-<meta name="description" content="The DJ Cracka Software Suite — seven pro-grade Windows tools for DJs and streamers.">
+<meta name="description" content="The DJ Cracka Software Suite — eight pro-grade Windows tools for DJs and streamers.">
 <link rel="icon" type="image/png" sizes="32x32" href="https://hub.cracka.gg/favicon-32.png">
 <link rel="apple-touch-icon" href="https://hub.cracka.gg/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,29 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-i
 .gs-tile{position:relative;border-radius:16px;background:rgba(8,14,9,.82);border:1px solid #00ff32;box-shadow:0 0 14px rgba(0,255,50,.15);padding:26px 22px;margin:8px auto}
 .gs-tile::before{content:"";position:absolute;inset:-2px;border-radius:18px;padding:1.5px;z-index:-1;pointer-events:none;background:conic-gradient(from var(--gswa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.55;animation:gswa 9s linear infinite}
 .card:hover{border-color:var(--hl,var(--ac))!important;box-shadow:0 0 20px var(--hl,var(--ac))!important;transform:translateY(-4px)}
+.card.hb-open{cursor:pointer}
+.hb-more{display:inline-block;margin-top:8px;font-family:'Share Tech Mono';font-size:12px;letter-spacing:1px;color:var(--ac,var(--yellow))}
+.hb-modalbg{position:fixed;inset:0;z-index:300;display:none;align-items:flex-start;justify-content:center;padding:40px 18px;overflow:auto;background:rgba(4,4,10,.78);backdrop-filter:blur(5px)}
+.hb-modalbg.show{display:flex}
+.hb-modal{position:relative;max-width:860px;width:100%;background:rgba(8,10,18,.96);border:1px solid #00ff32;border-radius:18px;box-shadow:0 0 40px rgba(0,255,50,.22);padding:30px 30px 34px;margin:auto}
+.hb-modal::before{content:"";position:absolute;inset:-2px;border-radius:20px;padding:1.5px;z-index:-1;pointer-events:none;background:conic-gradient(from var(--gswa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.5;animation:gswa 9s linear infinite}
+.hb-x{position:absolute;top:14px;right:16px;background:none;border:0;color:var(--mut);font-size:26px;line-height:1;cursor:pointer}
+.hb-x:hover{color:var(--pink)}
+.hb-eyebrow{font-family:'Share Tech Mono';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
+.hb-modal h2{font-family:'Orbitron';font-weight:900;font-size:30px;color:#fff;margin:6px 0 2px}
+.hb-modal h2 span{color:var(--green);font-size:18px}
+.hb-sub{color:var(--purple);font-family:'Chakra Petch';font-weight:700;font-size:14px;margin-bottom:16px}
+.hb-shot{width:100%;border-radius:12px;border:1px solid var(--line-strong);display:block;margin:0 0 18px}
+.hb-lead{color:var(--txt);font-size:15px;line-height:1.6;margin-bottom:20px}
+.hb-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px}
+@media(max-width:640px){.hb-cols{grid-template-columns:1fr}}
+.hb-cols h4{font-family:'Orbitron';font-weight:700;font-size:14px;color:var(--cyan);margin:0 0 8px;letter-spacing:.5px}
+.hb-cols ul{margin:0;padding-left:18px}
+.hb-cols li{color:var(--mut);font-size:13.5px;line-height:1.55;margin-bottom:5px}
+.hb-cols li b{color:var(--txt)}
+.hb-use{margin-top:20px;border-left:2px solid var(--yellow);background:rgba(255,230,0,.05);padding:12px 16px;border-radius:0 10px 10px 0;color:var(--txt);font-size:14px;line-height:1.6}
+.hb-actions{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
+
 </style>
 </head>
 <body>
@@ -40,7 +63,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-i
 <div class="page-head"><div class="wrap">
   <div class="eyebrow">// The Arsenal</div>
   <h1>The Suite</h1>
-  <p>Seven tools, one identity. Each shares the randomized 5-color cyberpunk theme, a consistent menu system, and a shared license — built independently, tested for real.</p>
+  <p>Eight tools, one identity. Each shares the randomized 5-color cyberpunk theme, a consistent menu system, and a shared license — built independently, tested for real.</p>
 </div></div>
 
 <section><div class="wrap">
@@ -52,6 +75,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-i
     <div class="card" style="--ac:var(--yellow)"><div class="card-media"><img src="https://hub.cracka.gg/Cracka_Card_Client_License_Portal.png" alt=""><div class="veil"></div><span class="badge">Testing</span></div><div class="card-body"><h3>Client License Portal</h3><p>The customer-facing tool — login, record lookup, and one-click license install.</p></div></div>
     <div class="card" style="--ac:var(--cyan)"><div class="card-media"><img src="https://hub.cracka.gg/Cracka_Card_Suite_Launcher.png" alt=""><div class="veil"></div><span class="badge">Testing</span></div><div class="card-body"><h3>Suite Launcher</h3><p>One menu that detects and launches whichever suite tools live in its folder.</p></div></div>
     <div class="card" style="--ac:var(--green)"><div class="card-media"><img src="https://hub.cracka.gg/Cracka_Card_Network_IP_Utility.png" alt=""><div class="veil"></div><span class="badge">Testing</span></div><div class="card-body"><h3>Network IP Utility</h3><p>Ping, traceroute, port and DNS checks, speed test, WHOIS, and service status — all in one.</p></div></div>
+    <div class="card hb-open" style="--ac:var(--yellow)" role="button" tabindex="0"><div class="card-media"><img src="hashburner.png" alt="Cracka's Hash Burner Tool" style="object-fit:cover;object-position:top center"><div class="veil"></div><span class="badge">Live</span></div><div class="card-body"><h3>Hash Burner</h3><p>Strong random key &amp; secret generator — GUID, hex, tokens &amp; Mori BYOK keys, with branded Excel export.</p><span class="hb-more">More info &rarr;</span></div></div>
   </div>
   <div style="text-align:center;margin-top:44px"><a class="btn btn-p" href="contact.html">Get the Suite</a></div>
 </div></section>
@@ -144,6 +168,50 @@ var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floo
 function pick(p){var x=p?PAL.filter(function(c){return c!==p;}):PAL;return x[Math.floor(Math.random()*x.length)];}
 document.addEventListener('mouseover',function(e){var t=e.target.closest?e.target.closest('.card'):null;if(!t||t._hlOn)return;t._hlOn=true;t.style.setProperty('--hl',pick(t._hlPrev));t._hlPrev=t.style.getPropertyValue('--hl');});
 document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target.closest('.card'):null;if(!t||(e.relatedTarget&&t.contains(e.relatedTarget)))return;t._hlOn=false;});})();
+</script>
+<div class="hb-modalbg" id="hbModal" aria-hidden="true">
+  <div class="hb-modal" role="dialog" aria-label="Hash Burner Tool details">
+    <button class="hb-x" id="hbClose" aria-label="Close">&times;</button>
+    <div class="hb-eyebrow">// Utility Suite · Windows / PowerShell</div>
+    <h2>Cracka's Hash Burner <span>v1.23</span></h2>
+    <div class="hb-sub">Strong Random Key &amp; Secret Generator — GUID, Hex, Tokens &amp; Mori BYOK Keys</div>
+    <img class="hb-shot" src="hashburner.png" alt="Hash Burner Tool — main menu">
+    <p class="hb-lead">A single standalone PowerShell tool — double-click the <b>.bat</b> and go, nothing to install. It burns cryptographically-secure random keys on demand and copies every one to your clipboard automatically. Wears the suite's neon Midnight Edition styling, with single-instance safety and a license gate.</p>
+    <div class="hb-cols">
+      <div><h4>Generation modes</h4><ul>
+        <li><b>Single key</b> — exact character count, or a random length between a low/high bound.</li>
+        <li><b>Batch</b> — burn many at once (fixed length or a per-key range); the whole set lands on the clipboard, newline-separated for Excel.</li>
+        <li><b>Custom-prefixed</b> — lead every key with your own prefix (e.g. <b>DJCRACKA-</b>) for branded, traceable license keys and tokens.</li>
+        <li><b>Quick presets</b> — one keystroke for a GUID/UUID, 32-char hex secret, 64-char alphanumeric token, or a 48-char <b>Mori BYOK Master Key</b>.</li>
+      </ul></div>
+      <div><h4>Character sets &amp; length</h4><ul>
+        <li><b>Alphanumeric</b> (A-Z a-z 0-9) — safest for API keys &amp; URLs.</li>
+        <li><b>Alphanumeric + symbols</b> — maximum entropy for master secrets &amp; vault keys.</li>
+        <li><b>Hex</b> (0-9 a-f) — the classic secret format.</li>
+        <li><b>Length</b> — an exact count or a random count between two bounds, chosen per key.</li>
+      </ul></div>
+      <div><h4>Output &amp; branded export</h4><ul>
+        <li><b>Auto-clipboard</b> — every burn (single or batch) is copied instantly.</li>
+        <li><b>Branded Excel</b> — export the last burn to a <b>.xlsx</b> with a frozen bold-header Hashes worksheet plus the signature DJ Cracka banner tab, saved to your Desktop with an auto-incrementing filename.</li>
+      </ul></div>
+      <div><h4>Security &amp; theme</h4><ul>
+        <li><b>Crypto-secure RNG</b> — not the ordinary pseudo-random; right for API secrets, tokens, webhook secrets and the Mori <b>BYOK_MASTER_KEY</b>.</li>
+        <li><b>Never transmitted</b> — keys exist only in your session, your clipboard, and any Excel you choose to export.</li>
+        <li><b>Suite theme</b> — randomized 5-color cyberpunk terminal, Midnight Edition banner, matching every other suite tool.</li>
+      </ul></div>
+    </div>
+    <div class="hb-use"><b>Great for:</b> API secrets, webhook secrets, session tokens, branded/traceable license keys, and the Mori BYOK master key — all generated locally, never sent anywhere.</div>
+    <div class="hb-actions"><a class="btn btn-p" href="contact.html">Get the Suite</a><a class="btn btn-o" href="license.html">License Admin</a></div>
+  </div>
+</div>
+<script>
+(function(){var bg=document.getElementById('hbModal');if(!bg)return;
+function open(){bg.classList.add('show');bg.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+function close(){bg.classList.remove('show');bg.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+document.querySelectorAll('.hb-open').forEach(function(c){c.addEventListener('click',open);c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+document.getElementById('hbClose').addEventListener('click',close);
+bg.addEventListener('click',function(e){if(e.target===bg)close();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});})();
 </script>
 </body>
 </html>
