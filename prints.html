@@ -11,6 +11,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Chakra+Petch:wght@600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://hub.cracka.gg/style.css">
 <style>
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(rgba(6,6,12,.55),rgba(6,6,12,.55)),radial-gradient(ellipse at 50% 42%,transparent 40%,rgba(6,6,12,.5) 86%),#000 url(https://mori.cracka.gg/assets/crown_bg_dark.jpg) center/cover no-repeat}
+body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 40%,transparent 85%)}
+@property --gswa{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes gswa{to{--gswa:360deg}}
+.gs-tile{position:relative;border-radius:16px;background:rgba(8,14,9,.82);border:1px solid #00ff32;box-shadow:0 0 14px rgba(0,255,50,.15);padding:26px 22px;margin:8px auto}
+.gs-tile::before{content:"";position:absolute;inset:-2px;border-radius:18px;padding:1.5px;z-index:-1;pointer-events:none;background:conic-gradient(from var(--gswa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.55;animation:gswa 9s linear infinite}
+.grid a.card:hover{border-color:var(--hl,var(--ac))!important;box-shadow:0 0 20px var(--hl,var(--ac))!important;transform:translateY(-4px)}
+</style>
+<style>
 @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
 @property --bc{syntax:'<color>';inherits:true;initial-value:#00ff32}
 .mwbar{display:flex;justify-content:center;margin-bottom:36px}
@@ -60,6 +69,7 @@
     <a href="about.html">About</a>
     <a href="license.html">License</a>
     <a href="contact.html">Contact</a>
+    <a href="https://mori.cracka.dev">Mori&nbsp;Bot</a>
   </nav>
 </div></header>
 
@@ -73,13 +83,84 @@
   <div class="mwbar">
     <a class="fbtn" href="https://makerworld.com/en/@CrackaFPV" target="_blank" rel="noopener"><div class="flame f2"></div><div class="flame"></div><div class="in"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5zm0 2.31L18.5 8 12 11.69 5.5 8 12 4.31zM5 9.19l6 3.46v6.92l-6-3.35V9.19zm14 0v7.03l-6 3.35v-6.92l6-3.46z"/></svg><div class="tx"><b>MakerWorld</b></div></div></a>
   </div>
-  <div class="grid" id="printGrid"></div>
+  <div class="grid gs-tile" id="printGrid"></div>
   <div class="mwtag">// Pulled from <b>makerworld.com/@CrackaFPV</b> — reload to reshuffle</div>
 </div></section>
 
+<!-- ===== MORI SUITE — STANDARD DISCORD JOIN BANNER (portable, self-contained) ===== -->
+<div id="join" class="mj-sec">
+  <style>
+  @property --mjwa{syntax:'<angle>';initial-value:0deg;inherits:false}
+  @keyframes mjwa{to{--mjwa:360deg}}
+  @keyframes mjwv{to{background-position:300% 0}}
+  @keyframes mjbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes mjpl{50%{opacity:.35}}
+  .mj-sec{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+  .mj-pin{position:relative;border-radius:14px;overflow:hidden;isolation:isolate;display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+    padding:22px 24px;min-height:130px;border:1px solid #1c4a28;box-shadow:0 0 12px rgba(0,255,50,.22);transition:.16s;
+    font-family:'JetBrains Mono','Share Tech Mono',ui-monospace,monospace}
+  .mj-pin::before{content:"";position:absolute;inset:-2px;border-radius:16px;padding:1.5px;z-index:0;pointer-events:none;
+    background:conic-gradient(from var(--mjwa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.6;animation:mjwa 9s linear infinite}
+  .mj-pin::after{content:"";position:absolute;inset:-2px;border-radius:16px;z-index:-1;pointer-events:none;
+    background:conic-gradient(from var(--mjwa),#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);filter:blur(13px);opacity:.24;animation:mjwa 9s linear infinite}
+  .mj-pin:hover{border-color:var(--mjhl,#00ffff);box-shadow:0 0 26px var(--mjhl,#00ffff)}
+  .mj-pin .mj-bgvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .mj-pin .mj-veil{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(5,8,16,.62),rgba(5,10,8,.28))}
+  .mj-pin > *:not(.mj-bgvid):not(.mj-veil){position:relative;z-index:3}
+  .mj-ico{width:60px;height:60px;border-radius:16px;flex:none;object-fit:cover;border:2px solid rgba(255,255,255,.85);
+    box-shadow:0 0 22px rgba(0,255,50,.5);animation:mjbob 3.4s ease-in-out infinite}
+  .mj-meta{flex:1;min-width:200px}
+  .mj-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#cfe9d6}
+  .mj-name{font-size:21px;font-weight:800;margin:2px 0 4px;text-shadow:0 2px 12px rgba(0,0,0,.7);
+    background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#ffe600,#00ff32);background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:mjwv 7s linear infinite}
+  .mj-res{display:flex;align-items:center;gap:14px;color:#cfe9d6;font-size:12px;flex-wrap:wrap}.mj-res span{display:inline-flex;align-items:center;gap:6px}
+  .mj-live{width:9px;height:9px;border-radius:50%;background:#00ff32;box-shadow:0 0 9px #00ff32;animation:mjpl 1.8s ease-in-out infinite}
+  .mj-off{width:9px;height:9px;border-radius:50%;background:#5f8f6d}
+  .mj-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:800;
+    letter-spacing:1.5px;font-size:13px;border:1px solid #00ff32;color:#04120a;background:#00ff32;box-shadow:0 0 22px rgba(0,255,50,.5);
+    cursor:pointer;transition:.15s;white-space:nowrap;font-family:'JetBrains Mono','Share Tech Mono',ui-monospace,monospace}
+  .mj-btn:hover{transform:translateY(-2px);background:var(--mjhl,#00ffff);border-color:var(--mjhl,#00ffff);box-shadow:0 0 30px var(--mjhl,#00ffff)}
+  </style>
+  <div class="mj-pin">
+    <video class="mj-bgvid" autoplay muted loop playsinline poster="https://mori.cracka.gg/assets/tunnel_poster.jpg">
+      <source src="https://mori.cracka.gg/assets/tunnel_loop.mp4" type="video/mp4">
+    </video>
+    <div class="mj-veil"></div>
+    <img class="mj-ico" src="https://cdn.discordapp.com/icons/744603068162769010/a_761386876b771897c827109ce4f683ce.gif?size=128" alt="The Insane Asylum">
+    <div class="mj-meta">
+      <div class="mj-label">You've been invited to join</div>
+      <div class="mj-name">THE INSANE ASYLUM</div>
+      <div class="mj-res">
+        <span><span class="mj-live"></span> 26 online</span>
+        <span><span class="mj-off"></span> 102 members</span>
+        <span>Cracka FPV &middot; live music, games &amp; mayhem</span>
+      </div>
+    </div>
+    <a class="mj-btn" href="https://discord.gg/zt7cKSUBTz" target="_blank" rel="noopener">JOIN SERVER &rsaquo;</a>
+  </div>
+  <script>
+  (function(){
+    var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
+    document.querySelectorAll('.mj-pin').forEach(function(el){
+      el.addEventListener('mouseenter',function(){
+        var p=PAL.filter(function(c){return c!=='#00ff32';});
+        el.style.setProperty('--mjhl',p[Math.floor(Math.random()*p.length)]);
+      });
+    });
+    document.querySelectorAll('.mj-pin img,.mj-pin video').forEach(function(m){
+      m.setAttribute('draggable','false');
+      m.addEventListener('contextmenu',function(e){e.preventDefault();});
+    });
+  })();
+  </script>
+</div>
+<!-- ===== END JOIN BANNER ===== -->
+
 <footer class="foot"><div class="wrap">
   <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
-  <div class="foot-links"><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a></div>
+  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
   <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
   <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
 </div></footer>
@@ -117,6 +198,17 @@ document.querySelectorAll('.fbtn').forEach(function(el){el.style.animationDelay=
     if(out.length)render(out);
   }).catch(function(){});
 })();
+</script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
+document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
+var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
+</script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
+function pick(p){var x=p?PAL.filter(function(c){return c!==p;}):PAL;return x[Math.floor(Math.random()*x.length)];}
+document.addEventListener('mouseover',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||t._hlOn)return;t._hlOn=true;t.style.setProperty('--hl',pick(t._hlPrev));t._hlPrev=t.style.getPropertyValue('--hl');});
+document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||(e.relatedTarget&&t.contains(e.relatedTarget)))return;t._hlOn=false;});})();
 </script>
 </body>
 </html>
