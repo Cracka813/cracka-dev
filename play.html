@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mori Games — Play</title>
+<link rel="icon" type="image/png" href="https://hub.cracka.gg/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00ff32;--purple:#b400ff;--pink:#ff2079;--yellow:#ffe600;--cyan:#00ffff;--ink:#06060d;--panel:rgba(10,10,20,.82);--accent:#00ff32}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Rajdhani',sans-serif;color:#eafff0;min-height:100vh;
+ background:linear-gradient(rgba(6,6,12,.62),rgba(6,6,12,.62)),radial-gradient(ellipse at 50% 30%,transparent 40%,rgba(6,6,12,.6) 88%),#000 url(https://mori.cracka.gg/assets/crown_bg_dark.jpg) center/cover fixed no-repeat}
+.wrap{max-width:960px;margin:0 auto;padding:26px 16px 60px}
+h1{font-family:'Orbitron';font-weight:900;letter-spacing:3px;text-align:center;font-size:clamp(28px,6vw,46px);margin:6px 0 2px;
+ background:linear-gradient(100deg,#00ff32,#00ffff 26%,#b400ff 60%,#ff2079);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{text-align:center;font-family:'Share Tech Mono';color:var(--cyan);letter-spacing:2px;font-size:12px;margin-bottom:18px}
+.deckpick{display:flex;gap:9px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.deckpick .dl{font-family:'Share Tech Mono';font-size:11px;letter-spacing:2px;color:#8aa;text-transform:uppercase;margin-right:2px}
+.sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.25);transition:.15s}
+.sw:hover{transform:scale(1.12)}
+.sw.on{border-color:#fff;box-shadow:0 0 12px currentColor}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.tab{font-family:'Orbitron';font-weight:700;font-size:13px;letter-spacing:1px;padding:11px 20px;border-radius:11px;cursor:pointer;
+ border:2px solid var(--line,#233);background:rgba(255,255,255,.03);color:#9fb;transition:.15s}
+.tab.on{border-color:var(--accent);color:#05130a;background:var(--accent);box-shadow:0 0 18px currentColor}
+.panel{position:relative;background:var(--panel);border:1px solid var(--accent);border-radius:18px;box-shadow:0 0 22px rgba(0,255,50,.14);padding:24px}
+.hide{display:none}
+.lbl{font-family:'Share Tech Mono';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8aa;margin-bottom:6px}
+.msg{font-family:'Orbitron';font-weight:700;font-size:18px;margin:14px 0;min-height:24px;color:var(--yellow)}
+.btn{font-family:'Orbitron';font-weight:700;font-size:14px;letter-spacing:1px;padding:12px 22px;border-radius:10px;cursor:pointer;border:2px solid var(--cyan);color:var(--cyan);background:rgba(0,255,255,.06);transition:.15s;margin:4px}
+.btn:hover:not(:disabled){background:rgba(0,255,255,.16);box-shadow:0 0 16px rgba(0,255,255,.35)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.g{border-color:var(--green);color:var(--green);background:rgba(0,255,50,.06)}
+.btn.p{border-color:var(--pink);color:var(--pink);background:rgba(255,32,121,.06)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ci{border-radius:7px;display:inline-block;vertical-align:bottom;box-shadow:0 3px 9px rgba(0,0,0,.55);background:#08080f}
+.crow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px;min-height:120px}
+.crow .ci{height:118px;width:calc(118px * 5 / 7)}
+.c4{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:rgba(180,0,255,.12);border:1px solid var(--purple);border-radius:12px;padding:8px;max-width:420px;margin:6px auto 10px}
+.cell{aspect-ratio:1;border-radius:50%;background:#0a0a15;border:1px solid #222}
+.cell.R{background:radial-gradient(circle at 35% 30%,#ff6aa0,#ff2079);box-shadow:0 0 10px rgba(255,32,121,.6)}
+.cell.Y{background:radial-gradient(circle at 35% 30%,#fff08a,#ffe600);box-shadow:0 0 10px rgba(255,230,0,.6)}
+.cdrop{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:420px;margin:0 auto 10px}
+.cdrop .btn{margin:0;padding:8px 0;font-size:16px}
+.hand{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;min-height:130px;align-items:flex-end}
+.hand .ci{height:124px;width:calc(124px * 5 / 7);cursor:pointer;transition:.12s}
+.hand .ci:hover:not(.dis){transform:translateY(-10px)}
+.hand .ci.dis{filter:grayscale(.7) brightness(.55);cursor:not-allowed}
+.pile-cards{display:flex;gap:8px;min-height:96px;align-items:flex-end;margin:4px 0}
+.pile-cards .ci{height:88px;width:calc(88px * 5 / 7)}
+.pile-cards .who{font-family:'Share Tech Mono';font-size:10px;color:#8aa;text-align:center}
+.stat{font-family:'Share Tech Mono';font-size:13px;color:#bcd;margin:4px 0}
+.stat b{color:var(--green)}
+input.bid{width:70px;font-family:'Share Tech Mono';font-size:18px;padding:8px;border-radius:8px;border:1px solid var(--cyan);background:#0b0b16;color:#eafff0;text-align:center}
+.solbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.sol-top{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.sol-founds,.sol-sw{display:flex;gap:7px}
+.pile{width:64px;height:90px;border-radius:7px;border:1px dashed rgba(255,255,255,.22);position:relative;flex:none;cursor:pointer}
+.pile.selt{border-color:var(--yellow);box-shadow:0 0 12px rgba(255,230,0,.5)}
+.pile .ci{width:64px;height:90px;position:absolute;top:0;left:0}
+.pile .cnt{position:absolute;bottom:-16px;left:0;width:100%;text-align:center;font-family:'Share Tech Mono';font-size:10px;color:#789}
+.sol-tableau{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px}
+.tcol{position:relative;width:64px;min-height:90px;flex:none}
+.tcol.empty{border:1px dashed rgba(255,255,255,.15);border-radius:7px;height:90px;cursor:pointer}
+.tcol .ci{width:64px;height:90px;position:absolute;left:0;cursor:pointer;border:1px solid transparent}
+.tcol .ci.sel{border-color:var(--yellow);box-shadow:0 0 12px rgba(255,230,0,.6)}
+.foot{text-align:center;font-family:'Share Tech Mono';font-size:11px;color:#788;margin-top:26px;letter-spacing:1px}
+</style></head>
+<body><div class="wrap">
+<h1>MORI GAMES</h1>
+<div class="sub">// 4:20 MIDNIGHT EDITION · vs. Mori (CPU)</div>
+<div class="deckpick"><span class="dl">Deck</span>
+ <span class="sw" data-deck="Green"   style="background:#00ff32;color:#00ff32"></span>
+ <span class="sw" data-deck="Purple"  style="background:#b400ff;color:#b400ff"></span>
+ <span class="sw" data-deck="Magenta" style="background:#ff2079;color:#ff2079"></span>
+ <span class="sw" data-deck="Yellow"  style="background:#ffe600;color:#ffe600"></span>
+ <span class="sw" data-deck="Cyan"    style="background:#00ffff;color:#00ffff"></span>
+</div>
+<div class="tabs">
+ <div class="tab on" data-g="blackjack">Blackjack</div>
+ <div class="tab" data-g="spades">Spades</div>
+ <div class="tab" data-g="solitaire">Solitaire</div>
+ <div class="tab" data-g="connect4">Connect 4</div>
+</div>
+<div class="panel" id="p-blackjack">
+ <div class="lbl">Mori (Dealer)</div><div class="crow" id="bjDealer"></div>
+ <div class="lbl">You</div><div class="crow" id="bjPlayer"></div>
+ <div class="msg" id="bjMsg"></div>
+ <div class="row"><button class="btn" id="bjHit">Hit</button><button class="btn" id="bjStand">Stand</button><button class="btn g" id="bjNew">New hand</button></div>
+</div>
+<div class="panel hide" id="p-spades">
+ <div id="spBidBox">
+   <div class="lbl">Your hand — choose your bid (tricks you'll win). Partner = AI 2. Suggested: <b id="spSug"></b></div>
+   <div class="hand" id="spHandBid"></div>
+   <div class="row"><input class="bid" id="spBidInput" type="number" min="0" max="13" value="3"><button class="btn g" id="spBidBtn">Bid</button></div>
+ </div>
+ <div id="spPlayBox" class="hide">
+   <div class="stat">Team You/AI2 — bid <b id="spTb0"></b>, tricks <b id="spTt0"></b> &nbsp;|&nbsp; Team AI1/AI3 — bid <b id="spTb1"></b>, tricks <b id="spTt1"></b></div>
+   <div class="lbl">Trick on table</div><div class="pile-cards" id="spPile"></div>
+   <div class="lbl" id="spTurnLbl">Your turn — must follow the led suit</div>
+   <div class="hand" id="spHand"></div>
+   <div class="msg" id="spMsg"></div>
+   <div class="row"><button class="btn g" id="spNew">New game</button></div>
+ </div>
+</div>
+<div class="panel hide" id="p-solitaire">
+ <div class="solbar">
+   <div class="lbl" style="margin:0">Klondike · draw-1 · click a card then a destination · double-click sends to foundation</div>
+   <div class="row" style="margin:0"><button class="btn" id="solAuto">⤴ Auto</button><button class="btn g" id="solNew">New game</button></div>
+ </div>
+ <div class="sol-top">
+   <div class="sol-sw">
+     <div class="pile" id="solStock" title="Draw"></div>
+     <div class="pile" id="solWaste" title="Waste"></div>
+   </div>
+   <div class="sol-founds" id="solFounds"></div>
+ </div>
+ <div class="sol-tableau" id="solTab"></div>
+ <div class="msg" id="solMsg" style="text-align:center"></div>
+</div>
+<div class="panel hide" id="p-connect4">
+ <div class="lbl" style="text-align:center">You = <span style="color:var(--pink)">●</span> Red &nbsp;·&nbsp; Mori = <span style="color:var(--yellow)">●</span> Yellow</div>
+ <div class="cdrop" id="c4Drop"></div>
+ <div class="c4" id="c4Grid"></div>
+ <div class="msg" id="c4Msg" style="text-align:center"></div>
+ <div class="row" style="justify-content:center"><button class="btn g" id="c4New">New game</button></div>
+</div>
+<div class="foot">Mori Games engine · single-core, thin web wrapper · vs-CPU demo (multiplayer coming)</div>
+</div>
+<script>
+var __DECK;function __req(p){return __DECK;}
+__DECK=(function(){var module={exports:{}};var exports=module.exports;var require=__req;
+const SUITS=[{s:'♠',name:'spades',color:'00FFFF'},{s:'♥',name:'hearts',color:'FF2079'},{s:'♦',name:'diamonds',color:'B400FF'},{s:'♣',name:'clubs',color:'00FF32'}];
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function freshDeck(){const d=[];for(const su of SUITS)for(const r of RANKS)d.push({r,...su});return d;}
+function shuffle(d,rng=Math.random){for(let i=d.length-1;i>0;i--){const j=(rng()*(i+1))|0;[d[i],d[j]]=[d[j],d[i]];}return d;}
+function cardStr(c){return c.r+c.s;}
+module.exports={SUITS,RANKS,freshDeck,shuffle,cardStr};
+return module.exports;})();
+var MG={deck:__DECK,blackjack:(function(){var module={exports:{}};var exports=module.exports;var require=__req;
+const {freshDeck,shuffle,cardStr}=require('../deck');
+function handValue(cards){let v=0,aces=0;for(const c of cards){if(c.r==='A'){aces++;v+=11;}else if(['K','Q','J','10'].includes(c.r))v+=10;else v+=+c.r;}while(v>21&&aces){v-=10;aces--;}return v;}
+function newGame(rng=Math.random){const deck=shuffle(freshDeck(),rng);const player=[deck.pop(),deck.pop()];const dealer=[deck.pop(),deck.pop()];
+  const g={deck,player,dealer,done:false,result:null};if(handValue(player)===21){g.done=true;g.result=handValue(dealer)===21?'push':'blackjack';}return g;}
+function hit(g){if(g.done)return g;g.player.push(g.deck.pop());if(handValue(g.player)>21){g.done=true;g.result='bust';}return g;}
+function stand(g){if(g.done)return g;while(handValue(g.dealer)<17)g.dealer.push(g.deck.pop());
+  const p=handValue(g.player),d=handValue(g.dealer);g.done=true;g.result=d>21?'win':p>d?'win':p<d?'lose':'push';return g;}
+module.exports={name:'Blackjack',minPlayers:1,category:'card',status:'ready',handValue,newGame,hit,stand};
+return module.exports;})(),
+connect4:(function(){var module={exports:{}};var exports=module.exports;var require=__req;
+const R=6,C=7;
+function newGame(){return{grid:Array.from({length:R},()=>Array(C).fill('')),turn:'R',done:false,result:null};}
+function drop(g,col){if(g.done||col<0||col>=C)return g;let row=-1;
+  for(let r=R-1;r>=0;r--)if(!g.grid[r][col]){row=r;break;}if(row<0)return g;
+  g.grid[row][col]=g.turn;if(check(g.grid,row,col,g.turn)){g.done=true;g.result=g.turn;}
+  else if(g.grid.every(r=>r.every(c=>c))){g.done=true;g.result='draw';}else g.turn=g.turn==='R'?'Y':'R';return g;}
+function check(gr,r,c,p){const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(const[dr,dc]of dirs){let n=1;for(const s of[1,-1]){let rr=r+dr*s,cc=c+dc*s;
+    while(rr>=0&&rr<R&&cc>=0&&cc<C&&gr[rr][cc]===p){n++;rr+=dr*s;cc+=dc*s;}}if(n>=4)return true;}return false;}
+function cpuMove(g,rng=Math.random){if(g.done)return g;const cols=[...Array(C).keys()].filter(c=>!g.grid[0][c]);
+  for(const p of[g.turn,g.turn==='R'?'Y':'R'])for(const c of cols){const t=g.grid.map(r=>r.slice());let row=-1;
+    for(let r=R-1;r>=0;r--)if(!t[r][c]){row=r;break;}if(row<0)continue;t[row][c]=p;if(check(t,row,c,p))return drop(g,c);}
+  return drop(g,cols[(rng()*cols.length)|0]);}
+module.exports={name:'Connect 4',minPlayers:1,category:'board',status:'ready',newGame,drop,cpuMove};
+return module.exports;})(),
+spades:(function(){var module={exports:{}};var exports=module.exports;var require=__req;
+const {freshDeck,shuffle}=require('../deck');
+const ORD={'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13,A:14};
+function deal(rng){const d=shuffle(freshDeck(),rng);return [d.slice(0,13),d.slice(13,26),d.slice(26,39),d.slice(39,52)];}
+function aiBid(hand){let b=0;for(const c of hand){if(c.name==='spades'&&['A','K','Q'].includes(c.r))b++;else if(c.r==='A')b++;else if(c.r==='K')b+=0.5;}return Math.max(1,Math.round(b));}
+function newGame(rng=Math.random){const hands=deal(rng);const bids=hands.map((h,i)=>i===0?null:aiBid(h));
+  return {hands,bids,tricks:[0,0,0,0],lead:0,turn:0,pile:[],spadesBroken:false,phase:'bidding',done:false,teamBids:[0,0],teamTricks:[0,0],result:null};}
+function setBid(g,youBid){g.bids[0]=youBid;g.teamBids=[g.bids[0]+g.bids[2],g.bids[1]+g.bids[3]];g.phase='play';g.turn=g.lead;return g;}
+function legal(hand,pile,spadesBroken){if(!pile.length){const nonSpade=hand.filter(c=>c.name!=='spades');
+    return (spadesBroken||nonSpade.length===0)?hand:nonSpade;}
+  const lead=pile[0].card.name;const follow=hand.filter(c=>c.name===lead);return follow.length?follow:hand;}
+function aiPick(hand,pile,sb){const opts=legal(hand,pile,sb);
+  if(!pile.length)return opts.reduce((a,b)=>ORD[a.r]<ORD[b.r]?a:b);
+  let best=null;for(const c of opts){if(best===null||ORD[c.r]<ORD[best.r])best=c;}return best;}
+function playCard(g,card){const hand=g.hands[g.turn];const i=hand.findIndex(c=>c.r===card.r&&c.name===card.name);
+  if(i<0)throw new Error('not in hand');const legalSet=legal(hand,g.pile,g.spadesBroken);
+  if(!legalSet.some(c=>c.r===card.r&&c.name===card.name))throw new Error('illegal (must follow suit)');
+  hand.splice(i,1);if(card.name==='spades')g.spadesBroken=true;g.pile.push({p:g.turn,card});
+  if(g.pile.length===4)resolveTrick(g);else g.turn=(g.turn+1)%4;return g;}
+function resolveTrick(g){const lead=g.pile[0].card.name;let win=g.pile[0];
+  for(const e of g.pile){const es=e.card.name==='spades',ws=win.card.name==='spades';
+    if(es&&!ws)win=e;else if(es===ws&&e.card.name===(ws?'spades':lead)&&ORD[e.card.r]>ORD[win.card.r])win=e;}
+  g.tricks[win.p]++;g.teamTricks[win.p%2]++;g.lead=win.p;g.turn=win.p;g.pile=[];
+  if(g.hands.every(h=>h.length===0))score(g);}
+function score(g){g.done=true;g.phase='done';const s=[0,1].map(t=>{const bid=g.teamBids[t],got=g.teamTricks[t];
+    return got>=bid?bid*10+(got-bid):-bid*10;});g.scores=s;g.result=s[0]>s[1]?'team You/AI2 win':s[1]>s[0]?'team AI1/AI3 win':'tie';}
+function autoAdvance(g){let guard=0;while(!g.done&&g.turn!==0&&g.phase==='play'&&guard++<60){playCard(g,aiPick(g.hands[g.turn],g.pile,g.spadesBroken));}return g;}
+module.exports={name:'Spades',minPlayers:4,category:'card',status:'ready',aiBid,newGame,setBid,legal,aiPick,playCard,autoAdvance};
+return module.exports;})(),
+solitaire:(function(){var module={exports:{}};var exports=module.exports;var require=__req;
+const {freshDeck,shuffle}=require('../deck');
+const ORDER=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const rankVal=r=>ORDER.indexOf(r)+1;
+const isRed=c=>c.name==='hearts'||c.name==='diamonds';
+function newGame(rng=Math.random){const deck=shuffle(freshDeck(),rng);const tableau=[[],[],[],[],[],[],[]];
+  for(let i=0;i<7;i++){for(let j=0;j<=i;j++){const card=deck.pop();card.up=(j===i);tableau[i].push(card);}}
+  const stock=deck.map(c=>(c.up=false,c));
+  return {tableau,foundations:{spades:[],hearts:[],diamonds:[],clubs:[]},stock,waste:[],moves:0,won:false};}
+function foundationAccepts(pile,card){if(pile.length===0)return card.r==='A';const top=pile[pile.length-1];return rankVal(card.r)===rankVal(top.r)+1;}
+function tableauAccepts(pile,card){if(pile.length===0)return card.r==='K';const top=pile[pile.length-1];if(!top.up)return false;return (isRed(card)!==isRed(top))&&(rankVal(card.r)===rankVal(top.r)-1);}
+function flipIfNeeded(pile){if(pile.length&&!pile[pile.length-1].up)pile[pile.length-1].up=true;}
+function checkWin(g){g.won=Object.values(g.foundations).every(p=>p.length===13);return g.won;}
+function draw(g){if(g.stock.length===0){if(g.waste.length===0)return false;g.stock=g.waste.reverse().map(c=>(c.up=false,c));g.waste=[];g.moves++;return true;}
+  const c=g.stock.pop();c.up=true;g.waste.push(c);g.moves++;return true;}
+function fromWaste(g,dest){if(g.waste.length===0)return false;const c=g.waste[g.waste.length-1];
+  if(dest.found){const p=g.foundations[c.name];if(!foundationAccepts(p,c))return false;p.push(g.waste.pop());g.moves++;checkWin(g);return true;}
+  const p=g.tableau[dest.tab];if(!p||!tableauAccepts(p,c))return false;p.push(g.waste.pop());g.moves++;return true;}
+function tabToTab(g,s,i,t){const src=g.tableau[s],dst=g.tableau[t];if(!src||!dst||i<0||i>=src.length||!src[i].up)return false;
+  for(let k=i;k<src.length-1;k++){const a=src[k],b=src[k+1];if(!(isRed(a)!==isRed(b)&&rankVal(b.r)===rankVal(a.r)-1))return false;}
+  if(!tableauAccepts(dst,src[i]))return false;const run=src.splice(i);dst.push(...run);flipIfNeeded(src);g.moves++;return true;}
+function tabToFound(g,s){const src=g.tableau[s];if(!src||!src.length)return false;const c=src[src.length-1];if(!c.up)return false;
+  const p=g.foundations[c.name];if(!foundationAccepts(p,c))return false;p.push(src.pop());flipIfNeeded(src);g.moves++;checkWin(g);return true;}
+function autoFoundations(g){let moved=0,again=true;while(again){again=false;
+    for(let s=0;s<7;s++){if(tabToFound(g,s)){moved++;again=true;}}
+    if(g.waste.length&&fromWaste(g,{found:g.waste[g.waste.length-1].name})){moved++;again=true;}}
+  checkWin(g);return moved;}
+module.exports={name:'Klondike Solitaire',minPlayers:1,category:'card',status:'ready',newGame,draw,fromWaste,tabToTab,tabToFound,autoFoundations,rankVal,isRed};
+return module.exports;})()};
+(function(){
+var $=function(s){return document.querySelector(s);};
+var THEME={Green:'#00ff32',Purple:'#b400ff',Magenta:'#ff2079',Yellow:'#ffe600',Cyan:'#00ffff'};
+var DECK='Green';try{var sv=localStorage.getItem('moriDeck');if(sv&&THEME[sv])DECK=sv;}catch(e){}
+var CARD_BASE='assets/cards/';
+var SUITF={spades:'spade',hearts:'heart',diamonds:'diamond',clubs:'club'};
+var RNN={A:'01','2':'02','3':'03','4':'04','5':'05','6':'06','7':'07','8':'08','9':'09','10':'10',J:'11',Q:'12',K:'13'};
+function cardSrc(c){return CARD_BASE+DECK+'/MoriKing_'+DECK+'_front_'+SUITF[c.name]+'_'+RNN[c.r]+'.png';}
+function backSrc(){return CARD_BASE+DECK+'/MoriKing_'+DECK+'_back.png';}
+function cimg(c,cls){return '<img class="ci '+(cls||'')+'" src="'+cardSrc(c)+'" alt="'+c.r+' of '+c.name+'">';}
+function bimg(cls){return '<img class="ci '+(cls||'')+'" src="'+backSrc()+'" alt="card back">';}
+function applyAccent(){document.documentElement.style.setProperty('--accent',THEME[DECK]);}
+function setDeck(d){DECK=d;try{localStorage.setItem('moriDeck',d);}catch(e){}
+  document.querySelectorAll('.sw').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-deck')===d);});
+  applyAccent();rerender();}
+document.querySelectorAll('.sw').forEach(function(s){s.addEventListener('click',function(){setDeck(s.getAttribute('data-deck'));});});
+var cur='blackjack';var GAMES=['blackjack','spades','solitaire','connect4'];
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){
+ document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});t.classList.add('on');
+ cur=t.getAttribute('data-g');GAMES.forEach(function(g){$('#p-'+g).classList.toggle('hide',g!==cur);});});});
+function rerender(){if(cur==='blackjack')bjR();else if(cur==='spades')spR();else if(cur==='solitaire')solR();else if(cur==='connect4')c4R();}
+/* BLACKJACK */
+var bj;
+function bjNew(){bj=MG.blackjack.newGame();bjR();}
+function bjR(){var hide=!bj.done;
+ $('#bjDealer').innerHTML=bj.dealer.map(function(c,i){return (hide&&i===1)?bimg():cimg(c);}).join('');
+ $('#bjPlayer').innerHTML=bj.player.map(function(c){return cimg(c);}).join('');
+ var pv=MG.blackjack.handValue(bj.player);
+ $('#bjMsg').textContent=bj.done?({blackjack:'BLACKJACK! You win ♠',win:'You win! ♠',lose:'Mori wins.',push:'Push — tie.',bust:'Bust! Mori wins.'})[bj.result]||bj.result:('Your move.  ('+pv+')');
+ $('#bjMsg').style.color=bj.done?(['win','blackjack'].indexOf(bj.result)>=0?'var(--green)':bj.result==='push'?'var(--cyan)':'var(--pink)'):'var(--yellow)';
+ $('#bjHit').disabled=bj.done;$('#bjStand').disabled=bj.done;}
+$('#bjHit').onclick=function(){MG.blackjack.hit(bj);bjR();};
+$('#bjStand').onclick=function(){MG.blackjack.stand(bj);bjR();};
+$('#bjNew').onclick=bjNew;
+/* SPADES */
+var sp;
+function spSort(a,b){var o={spades:0,hearts:1,diamonds:2,clubs:3};if(o[a.name]!==o[b.name])return o[a.name]-o[b.name];var R={A:14,K:13,Q:12,J:11,'10':10};return (R[b.r]||+b.r)-(R[a.r]||+a.r);}
+function spNew(){sp=MG.spades.newGame();$('#spBidBox').classList.remove('hide');$('#spPlayBox').classList.add('hide');
+ $('#spSug').textContent=MG.spades.aiBid(sp.hands[0]);$('#spBidInput').value=MG.spades.aiBid(sp.hands[0]);
+ $('#spHandBid').innerHTML=sp.hands[0].slice().sort(spSort).map(function(c){return cimg(c);}).join('');}
+$('#spBidBtn').onclick=function(){var b=Math.max(0,Math.min(13,+$('#spBidInput').value||0));MG.spades.setBid(sp,b);MG.spades.autoAdvance(sp);$('#spBidBox').classList.add('hide');$('#spPlayBox').classList.remove('hide');spR();};
+function spR(){if(!sp)return;
+ if(sp.phase==='bidding'){$('#spHandBid').innerHTML=sp.hands[0].slice().sort(spSort).map(function(c){return cimg(c);}).join('');return;}
+ $('#spTb0').textContent=sp.teamBids[0];$('#spTb1').textContent=sp.teamBids[1];
+ $('#spTt0').textContent=sp.teamTricks[0];$('#spTt1').textContent=sp.teamTricks[1];
+ $('#spPile').innerHTML=sp.pile.map(function(e){var nm=['You','AI1','AI2','AI3'][e.p];return '<div><div class="who">'+nm+'</div>'+cimg(e.card)+'</div>';}).join('');
+ var legal=MG.spades.legal(sp.hands[0],sp.pile,sp.spadesBroken);
+ var yourTurn=(!sp.done&&sp.turn===0&&sp.phase==='play');
+ $('#spTurnLbl').textContent=sp.done?'Game over':(yourTurn?'Your turn':'Mori players thinking...');
+ var h=$('#spHand');h.innerHTML='';
+ sp.hands[0].slice().sort(spSort).forEach(function(c){
+   var isLegal=legal.some(function(x){return x.r===c.r&&x.name===c.name;});
+   var el=document.createElement('img');el.className='ci'+(!(yourTurn&&isLegal)?' dis':'');el.src=cardSrc(c);el.alt=c.r+c.name;
+   if(yourTurn&&isLegal)el.onclick=function(){try{MG.spades.playCard(sp,c);MG.spades.autoAdvance(sp);}catch(e){}spR();};
+   h.appendChild(el);});
+ var m=$('#spMsg');if(sp.done){m.textContent=sp.result+'  ('+sp.scores[0]+' vs '+sp.scores[1]+')';m.style.color=sp.scores[0]>sp.scores[1]?'var(--green)':sp.scores[0]<sp.scores[1]?'var(--pink)':'var(--cyan)';}else{m.textContent='';}}
+$('#spNew').onclick=spNew;
+/* SOLITAIRE */
+var sol,solSel=null;
+var SUITSYM={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+function solNew(){sol=MG.solitaire.newGame();solSel=null;solR();}
+function solClearSel(){solSel=null;}
+function solR(){if(!sol)return;
+ $('#solStock').innerHTML=sol.stock.length?bimg():'<div class="cnt" style="top:36px">↻</div>';
+ var wa=$('#solWaste');wa.className='pile'+(solSel&&solSel.type==='waste'?' selt':'');
+ wa.innerHTML=sol.waste.length?cimg(sol.waste[sol.waste.length-1]):'';
+ var fh='';['spades','hearts','diamonds','clubs'].forEach(function(su){var p=sol.foundations[su];
+   var inner=p.length?cimg(p[p.length-1]):'<div class="cnt" style="top:34px;font-size:20px;color:rgba(255,255,255,.25)">'+SUITSYM[su]+'</div>';
+   fh+='<div class="pile" data-found="'+su+'">'+inner+'</div>';});
+ $('#solFounds').innerHTML=fh;
+ var th='';
+ sol.tableau.forEach(function(col,ci){
+   if(!col.length){th+='<div class="tcol empty" data-tcol="'+ci+'"></div>';return;}
+   var top=0,inner='';
+   col.forEach(function(card,ri){var isSel=solSel&&solSel.type==='tab'&&solSel.col===ci&&ri>=solSel.idx;
+     inner+=card.up?'<img class="ci'+(isSel?' sel':'')+'" style="top:'+top+'px" src="'+cardSrc(card)+'" data-tcol="'+ci+'" data-tidx="'+ri+'" alt="'+card.r+card.name+'">':'<img class="ci" style="top:'+top+'px" src="'+backSrc()+'" data-tcol="'+ci+'" data-tidx="'+ri+'" alt="down">';
+     top+=card.up?24:13;});
+   th+='<div class="tcol" data-tcol="'+ci+'" style="height:'+(top+90)+'px">'+inner+'</div>';});
+ $('#solTab').innerHTML=th;
+ var m=$('#solMsg');
+ if(sol.won){m.textContent='🏆  You cleared it! ('+sol.moves+' moves)';m.style.color='var(--green)';}
+ else{m.textContent='Moves: '+sol.moves;m.style.color='#8aa';}}
+$('#solStock').onclick=function(){MG.solitaire.draw(sol);solClearSel();solR();};
+$('#solWaste').onclick=function(){if(!sol.waste.length)return;if(solSel&&solSel.type==='waste'){solClearSel();}else{solSel={type:'waste'};}solR();};
+$('#solWaste').ondblclick=function(){if(sol.waste.length){MG.solitaire.fromWaste(sol,{found:sol.waste[sol.waste.length-1].name});solClearSel();solR();}};
+$('#solFounds').onclick=function(e){var f=e.target.closest('[data-found]');if(!f)return;var su=f.getAttribute('data-found');if(!solSel)return;
+  if(solSel.type==='waste'){MG.solitaire.fromWaste(sol,{found:su});}
+  else if(solSel.type==='tab'){var col=solSel.col;if(solSel.idx===sol.tableau[col].length-1)MG.solitaire.tabToFound(sol,col);}
+  solClearSel();solR();};
+$('#solTab').addEventListener('click',function(e){
+  var img=e.target.closest('img.ci');var colEl=e.target.closest('[data-tcol]');
+  if(img&&img.getAttribute('data-tidx')!==null&&img.alt!=='down'){
+    var ci=+img.getAttribute('data-tcol'),ri=+img.getAttribute('data-tidx');
+    if(solSel){var t=ci;
+      if(solSel.type==='waste'){if(MG.solitaire.fromWaste(sol,{tab:t})){solClearSel();solR();return;}}
+      else if(solSel.type==='tab'&&solSel.col!==t){if(MG.solitaire.tabToTab(sol,solSel.col,solSel.idx,t)){solClearSel();solR();return;}}}
+    solSel={type:'tab',col:ci,idx:ri};solR();return;}
+  if(colEl){var t2=+colEl.getAttribute('data-tcol');
+    if(solSel){if(solSel.type==='waste'){MG.solitaire.fromWaste(sol,{tab:t2});}else if(solSel.type==='tab'&&solSel.col!==t2){MG.solitaire.tabToTab(sol,solSel.col,solSel.idx,t2);}solClearSel();solR();}}});
+$('#solTab').addEventListener('dblclick',function(e){var img=e.target.closest('img.ci');if(!img||img.alt==='down')return;
+  var ci=+img.getAttribute('data-tcol'),ri=+img.getAttribute('data-tidx');
+  if(ri===sol.tableau[ci].length-1){MG.solitaire.tabToFound(sol,ci);solClearSel();solR();}});
+$('#solAuto').onclick=function(){MG.solitaire.autoFoundations(sol);solClearSel();solR();};
+$('#solNew').onclick=solNew;
+/* CONNECT 4 */
+var c4;
+function c4New(){c4=MG.connect4.newGame();buildDrop();c4R();}
+function buildDrop(){var d=$('#c4Drop');d.innerHTML='';for(var c=0;c<7;c++){(function(col){var b=document.createElement('button');b.className='btn';b.textContent='▼';b.onclick=function(){c4Drop(col);};d.appendChild(b);})(c);}}
+function c4Drop(col){if(c4.done||c4.turn!=='R')return;MG.connect4.drop(c4,col);if(!c4.done)MG.connect4.cpuMove(c4);c4R();}
+function c4R(){if(!c4)return;var g=$('#c4Grid');g.innerHTML='';for(var r=0;r<6;r++)for(var c=0;c<7;c++){var cell=document.createElement('div');cell.className='cell '+(c4.grid[r][c]||'');g.appendChild(cell);}
+ var m=$('#c4Msg');if(c4.done){m.textContent=c4.result==='R'?'You win! ●':c4.result==='Y'?'Mori wins ●':'Draw.';m.style.color=c4.result==='R'?'var(--green)':c4.result==='Y'?'var(--pink)':'var(--cyan)';}else{m.textContent='Drop a disc.';m.style.color='var(--yellow)';}}
+$('#c4New').onclick=c4New;
+document.querySelectorAll('.sw').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-deck')===DECK);});
+applyAccent();bjNew();spNew();solNew();c4New();
+})();
+</script>
+</body></html>
