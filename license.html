@@ -242,6 +242,120 @@ td.lk{color:var(--mut);text-align:center;font-family:'Share Tech Mono';opacity:.
 </div>
 <!-- ===== END JOIN BANNER ===== -->
 
+<!-- ===== MORI RADIO MINI-PLAYER — drop in once before </body> on every site ===== -->
+<!-- Docked bottom-right. Pulls all channels from /api/stations. ⧉ Pop out keeps playing across -->
+<!-- page loads & games. HTML5 audio (separate from DJ Mori in Discord VC). Golden-rule component. -->
+<style>
+#mori-rp{position:fixed;right:16px;bottom:16px;width:330px;max-width:calc(100vw - 24px);z-index:60;
+  background:linear-gradient(180deg,rgba(14,11,26,.97),rgba(9,9,17,.97));border:1px solid rgba(180,0,255,.45);
+  border-radius:14px;box-shadow:0 0 30px rgba(180,0,255,.25);overflow:hidden;font-family:'Rajdhani',sans-serif;color:#e7e9f5}
+#mori-rp .rp-hd{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
+#mori-rp .rp-hd .dot{width:8px;height:8px;border-radius:50%;background:#444;flex:0 0 auto}
+#mori-rp.playing .rp-hd .dot{background:#00ff32;box-shadow:0 0 8px #00ff32}
+#mori-rp .rp-hd b{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:1px;background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#00ff32);background-size:240% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:mori-wave 7s ease-in-out infinite}
+#mori-rp .rp-hd .rp-col{margin-left:auto;color:#8a8a9a;font-size:15px;line-height:1}
+#mori-rp .rp-bd{padding:10px 11px;display:flex;flex-direction:column;gap:9px}
+#mori-rp.collapsed .rp-bd{display:none}
+#mori-rp .rp-now{font-family:'Share Tech Mono',monospace;font-size:10px;color:#00ffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mori-rp select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:#fff;font-family:'Rajdhani';font-size:13px;padding:7px 9px}
+#mori-rp select option{background:#0d0b16}
+#mori-rp .rp-ctl{display:flex;align-items:center;gap:9px}
+#mori-rp .rp-pp{width:38px;height:38px;border-radius:50%;border:2px solid #00ff32;background:rgba(0,255,50,.08);color:#00ff32;font-size:15px;cursor:pointer;flex:0 0 auto}
+#mori-rp .rp-pp:hover{background:rgba(0,255,50,.18)}
+#mori-rp input[type=range]{flex:1;accent-color:#b400ff}
+#mori-rp .rp-pop{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:11px;border:1px solid rgba(0,255,255,.4);background:rgba(0,255,255,.08);color:#00ffff;border-radius:8px;padding:7px 9px;cursor:pointer}
+#mori-rp .rp-pop:hover{background:rgba(0,255,255,.18)}
+#mori-rp .rp-hint{font-family:'Share Tech Mono';font-size:9px;color:#8a8a9a}
+</style>
+<div id="mori-rp" class="collapsed" aria-label="Mori radio player">
+  <div class="rp-hd" id="rp-hd"><span class="dot"></span><b>MORI RADIO</b><span class="rp-col" id="rp-col">▸</span></div>
+  <div class="rp-bd">
+    <div class="rp-now" id="rp-now">— pick a station —</div>
+    <select id="rp-sel"><option>Loading channels…</option></select>
+    <div class="rp-ctl"><button class="rp-pp" id="rp-pp" aria-label="Play">▶</button>
+      <input type="range" id="rp-vol" min="0" max="100" value="80" aria-label="Volume">
+      <button class="rp-pop" id="rp-pop" title="Keep playing across pages">⧉</button></div>
+    <div class="rp-hint">In-browser · ⧉ pop out to keep playing across pages</div>
+  </div>
+</div>
+<audio id="rp-audio"></audio>
+<script>
+(function(){
+  var API='https://mori.cracka.gg';
+  var $=function(i){return document.getElementById(i);};
+  var box=$('mori-rp'), sel=$('rp-sel'), au=$('rp-audio'), pp=$('rp-pp'), pop=null, STA=[];
+  function LS(k,v){try{if(v===undefined)return localStorage.getItem('moriRP_'+k);localStorage.setItem('moriRP_'+k,v);}catch(_){}}
+  if(LS('open')==='1') box.classList.remove('collapsed');
+  (function(){var hd=$('rp-hd'),dg=false,mv=false,sx,sy,ox,oy;function dn(e){var t=e.touches?e.touches[0]:e;dg=true;mv=false;sx=t.clientX;sy=t.clientY;var r=box.getBoundingClientRect();ox=r.left;oy=r.top;box.style.right='auto';box.style.bottom='auto';box.style.left=ox+'px';box.style.top=oy+'px';if(e.cancelable)e.preventDefault();}function mvf(e){if(!dg)return;var t=e.touches?e.touches[0]:e;var dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>4)mv=true;box.style.left=Math.max(0,Math.min(window.innerWidth-46,ox+dx))+'px';box.style.top=Math.max(0,Math.min(window.innerHeight-32,oy+dy))+'px';}function up(){if(!dg)return;dg=false;if(!mv){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');}}hd.style.cursor='move';hd.title='Drag to move · click to collapse';hd.addEventListener('mousedown',dn);window.addEventListener('mousemove',mvf);window.addEventListener('mouseup',up);hd.addEventListener('touchstart',dn,{passive:false});window.addEventListener('touchmove',mvf,{passive:false});window.addEventListener('touchend',up);})();
+  $('rp-col').textContent=box.classList.contains('collapsed')?'▸':'▾';
+  function cur(){return STA[Number(sel.value)||0]||null;}
+  function play(){var st=cur();if(!st)return;au.src=st.u;au.volume=(Number($('rp-vol').value)||80)/100;au.play().then(function(){box.classList.add('playing');pp.textContent='⏸';$('rp-now').textContent='▶ '+st.n;}).catch(function(){$('rp-now').textContent='⚠ tap ▶ again';});}
+  function stop(){au.pause();box.classList.remove('playing');pp.textContent='▶';}
+  pp.onclick=function(){if(au.paused)play();else stop();};
+  sel.onchange=function(){LS('sta',sel.value);if(!au.paused)play();else{var st=cur();if(st)$('rp-now').textContent='— '+st.n+' —';}};
+  var v0=LS('vol'); if(v0)$('rp-vol').value=v0;
+  $('rp-vol').oninput=function(){au.volume=(Number(this.value)||0)/100;LS('vol',this.value);if(pop&&!pop.closed){try{pop.postMessage({vol:au.volume},'*');}catch(_){}}};
+  $('rp-pop').onclick=function(){var st=cur();if(!st)return;stop();
+    var html='<!doctype html><meta charset=utf-8><title>Mori Radio</title><body style="margin:0;background:#0b0b17;color:#e7e9f5;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:10px">'+
+      '<div style="font:700 13px Orbitron,sans-serif;letter-spacing:1px;color:#00ffff">MORI RADIO</div><div id=n style="font:11px monospace;color:#8a8a9a">'+st.n+'</div>'+
+      '<audio id=a autoplay controls src="'+st.u+'" style="width:300px"></audio><div style="font:10px monospace;color:#8a8a9a">Keeps playing while you browse. Close to stop.</div>'+
+      '<'+'script>onmessage=function(e){if(e.data&&e.data.vol!=null)document.getElementById("a").volume=e.data.vol;}<'+'/script>';
+    pop=window.open('','moriRadio','width=360,height=190');if(pop){pop.document.write(html);pop.document.close();$('rp-now').textContent='⧉ playing in pop-out';}else{$('rp-now').textContent='⚠ allow pop-ups';play();}};
+  fetch(API+'/api/stations').then(function(r){return r.json();}).then(function(d){STA=(d&&d.stations)||[];if(!STA.length){sel.innerHTML='<option>No channels</option>';return;}
+    sel.innerHTML=STA.map(function(s,i){return '<option value="'+i+'">'+(s.n||('Station '+(i+1))).replace(/</g,'&lt;')+'</option>';}).join('');
+    var last=LS('sta');if(last!=null&&STA[Number(last)]){sel.value=last;}$('rp-now').textContent='— '+(cur()?cur().n:'')+' —';
+  }).catch(function(){sel.innerHTML='<option>Channels unavailable</option>';});
+})();
+</script>
+<!-- ===== END MORI RADIO MINI-PLAYER ===== -->
+
+  <!-- ===== MORI TTS TICKER BAR ===== -->
+  <div id="mori-tick" class="mt-empty" role="region" aria-label="Mori news ticker" style="max-width:1180px;margin:20px auto">
+    <span class="mt-tag">📡 <b>MORI</b></span>
+    <button class="mt-btn" id="mt-pause" title="Pause scrolling" aria-label="Pause scrolling" aria-pressed="false">⏸</button>
+    <div class="mt-view"><div class="mt-track" id="mt-track"></div></div>
+    <button class="mt-btn" id="mt-spk" title="Hear the latest headline" aria-label="Speak latest headline" aria-pressed="false">🔊</button>
+  </div>
+  <style>
+  #mori-tick{position:relative;display:flex;align-items:center;gap:8px;width:100%;font-family:'Rajdhani','Segoe UI',sans-serif;font-size:14px;font-weight:600;background:linear-gradient(90deg,rgba(9,9,17,.94),rgba(17,9,28,.94));border-top:1px solid rgba(180,0,255,.35);border-bottom:1px solid rgba(0,255,255,.22);color:#dfe6ff;padding:7px 12px;box-sizing:border-box;overflow:hidden;border-radius:10px}
+  #mori-tick .mt-tag{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#00ffff;border-right:1px solid rgba(255,255,255,.12);padding-right:10px}
+  #mori-tick .mt-tag b{background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#00ff32);background-size:240% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:mori-wave 7s ease-in-out infinite}
+  @keyframes mori-wave{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+  #mori-tick .mt-view{flex:1 1 auto;overflow:hidden;white-space:nowrap;position:relative;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+  #mori-tick .mt-track{display:inline-block;white-space:nowrap;padding-left:100%;animation:mt-scroll 40s linear infinite;will-change:transform}
+  #mori-tick.mt-paused .mt-track,#mori-tick .mt-view:hover .mt-track{animation-play-state:paused}
+  #mori-tick .mt-track a{text-decoration:none}#mori-tick .mt-track a:hover{text-decoration:underline}
+  #mori-tick .mt-sep{color:#5a5a72;margin:0 15px}
+  #mori-tick .mt-btn{flex:0 0 auto;cursor:pointer;border:1px solid rgba(0,255,255,.35);background:rgba(0,255,255,.06);color:#00ffff;border-radius:8px;font-size:13px;line-height:1;padding:5px 8px;transition:.15s}
+  #mori-tick .mt-btn:hover{background:rgba(0,255,255,.18);box-shadow:0 0 10px rgba(0,255,255,.3)}
+  #mori-tick .mt-btn[aria-pressed="true"]{background:rgba(0,255,50,.18);border-color:rgba(0,255,50,.5);color:#00ff64}
+  #mori-tick.mt-empty{display:none}
+  @keyframes mt-scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+  @media(prefers-reduced-motion:reduce){#mori-tick .mt-track{animation-duration:0s;padding-left:0}}
+  </style>
+  <script>
+  (function(){
+    var API='https://mori.cracka.gg', GUILD='';
+    var PALETTE=['#00ff32','#00ffff','#b400ff','#ff2079','#ffe600'];
+    var FONTS={'':'', rajdhani:"'Rajdhani',sans-serif", chakra:"'Chakra Petch',sans-serif", mono:"'Share Tech Mono',monospace", system:"system-ui,Segoe UI,sans-serif"};
+    var bar=document.getElementById('mori-tick'), track=document.getElementById('mt-track'), spk=document.getElementById('mt-spk'), pause=document.getElementById('mt-pause');
+    var items=[], cfg={enabled:true,engine:'browser',voice:'af_bella',rate:'1'}, kokoroReady=false, cur=null, audio=null;
+    var _speed=3;
+    function applySpeed(){ var PXPS={1:22,2:38,3:55,4:78,5:110}; var w=track.scrollWidth||0; var v=PXPS[_speed]||55; track.style.animationDuration=(w>40?(w/v):40).toFixed(1)+'s'; }
+    function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function applyDisp(d){ d=d||{}; _speed=Math.max(1,Math.min(5,Number(d.speed)||3)); if(d.font&&FONTS[d.font])bar.style.fontFamily=FONTS[d.font]; if(d.size)bar.style.fontSize=(Number(d.size)||14)+'px'; }
+    function chunkHtml(){ return items.map(function(it,i){ var col=PALETTE[i%PALETTE.length], t=esc(it.title||''); return it.link?'<a href="'+esc(it.link)+'" target="_blank" rel="noopener" style="color:'+col+'">'+t+'</a>':'<span style="color:'+col+'">'+t+'</span>'; }).join('<span class="mt-sep">◆</span>'); }
+    function render(){ if(!items.length){ bar.className='mt-empty'; return; } bar.className=''; var h=chunkHtml(); track.innerHTML=h+'<span class="mt-sep">◆</span>'+h; cur=(items[0]&&items[0].title)?items[0].title:null; spk.style.display=(cfg.enabled===false)?'none':''; applySpeed(); }
+    pause.addEventListener('click',function(){ var p=bar.classList.toggle('mt-paused'); pause.setAttribute('aria-pressed',p?'true':'false'); pause.textContent=p?'▶':'⏸'; pause.title=p?'Resume scrolling':'Pause scrolling'; });
+    function stopAudio(){ try{ if(audio){audio.pause();audio=null;} window.speechSynthesis&&window.speechSynthesis.cancel(); }catch(_){} spk.setAttribute('aria-pressed','false'); }
+    function speakBrowser(text){ if(!('speechSynthesis' in window))return false; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text); u.rate=parseFloat(cfg.rate)||1; u.onend=function(){spk.setAttribute('aria-pressed','false');}; window.speechSynthesis.speak(u); return true; }catch(_){ return false; } }
+    function speakKokoro(text){ fetch(API+'/api/tts/say',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:text,voice:cfg.voice})}).then(function(r){return r.json().catch(function(){return{};});}).then(function(r){ if(r.audioB64){ audio=new Audio('data:'+(r.contentType||'audio/mpeg')+';base64,'+r.audioB64); audio.onended=function(){spk.setAttribute('aria-pressed','false');}; audio.play(); } else { if(!speakBrowser(text)) spk.setAttribute('aria-pressed','false'); } }).catch(function(){ if(!speakBrowser(text)) spk.setAttribute('aria-pressed','false'); }); }
+    spk.addEventListener('click',function(){ if(spk.getAttribute('aria-pressed')==='true'){ stopAudio(); return; } if(!cur)return; spk.setAttribute('aria-pressed','true'); if(cfg.engine==='kokoro')speakKokoro(cur); else if(!speakBrowser(cur))speakKokoro(cur); });
+    fetch(API+'/api/ticker'+(GUILD?('?guild='+encodeURIComponent(GUILD)):'')).then(function(r){return r.json();}).then(function(d){ items=(d&&d.items)||[]; if(d&&d.tts)cfg=d.tts; kokoroReady=!!(d&&d.kokoro); applyDisp(d&&d.ticker); render(); if(document.fonts&&document.fonts.ready){document.fonts.ready.then(applySpeed);} window.addEventListener('resize',applySpeed); }).catch(function(){ bar.className='mt-empty'; });
+  })();
+  </script>
+  <!-- ===== END MORI TTS TICKER BAR ===== -->
+
 <footer class="foot"><div class="wrap">
   <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
   <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
@@ -506,119 +620,7 @@ document.querySelectorAll('select').forEach(function(sel){var prev=null;
 sel.querySelectorAll('option').forEach(function(o){var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;
 var c=pool[Math.floor(Math.random()*pool.length)];o.style.color=c;prev=c;});sel.style.color='#eafff0';});})();
 </script>
-<!-- ===== MORI RADIO MINI-PLAYER — drop in once before </body> on every site ===== -->
-<!-- Docked bottom-right. Pulls all channels from /api/stations. ⧉ Pop out keeps playing across -->
-<!-- page loads & games. HTML5 audio (separate from DJ Mori in Discord VC). Golden-rule component. -->
-<style>
-#mori-rp{position:fixed;right:16px;bottom:16px;width:330px;max-width:calc(100vw - 24px);z-index:60;
-  background:linear-gradient(180deg,rgba(14,11,26,.97),rgba(9,9,17,.97));border:1px solid rgba(180,0,255,.45);
-  border-radius:14px;box-shadow:0 0 30px rgba(180,0,255,.25);overflow:hidden;font-family:'Rajdhani',sans-serif;color:#e7e9f5}
-#mori-rp .rp-hd{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
-#mori-rp .rp-hd .dot{width:8px;height:8px;border-radius:50%;background:#444;flex:0 0 auto}
-#mori-rp.playing .rp-hd .dot{background:#00ff32;box-shadow:0 0 8px #00ff32}
-#mori-rp .rp-hd b{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:1px;background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#00ff32);background-size:240% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:mori-wave 7s ease-in-out infinite}
-#mori-rp .rp-hd .rp-col{margin-left:auto;color:#8a8a9a;font-size:15px;line-height:1}
-#mori-rp .rp-bd{padding:10px 11px;display:flex;flex-direction:column;gap:9px}
-#mori-rp.collapsed .rp-bd{display:none}
-#mori-rp .rp-now{font-family:'Share Tech Mono',monospace;font-size:10px;color:#00ffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#mori-rp select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:#fff;font-family:'Rajdhani';font-size:13px;padding:7px 9px}
-#mori-rp select option{background:#0d0b16}
-#mori-rp .rp-ctl{display:flex;align-items:center;gap:9px}
-#mori-rp .rp-pp{width:38px;height:38px;border-radius:50%;border:2px solid #00ff32;background:rgba(0,255,50,.08);color:#00ff32;font-size:15px;cursor:pointer;flex:0 0 auto}
-#mori-rp .rp-pp:hover{background:rgba(0,255,50,.18)}
-#mori-rp input[type=range]{flex:1;accent-color:#b400ff}
-#mori-rp .rp-pop{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:11px;border:1px solid rgba(0,255,255,.4);background:rgba(0,255,255,.08);color:#00ffff;border-radius:8px;padding:7px 9px;cursor:pointer}
-#mori-rp .rp-pop:hover{background:rgba(0,255,255,.18)}
-#mori-rp .rp-hint{font-family:'Share Tech Mono';font-size:9px;color:#8a8a9a}
-</style>
-<div id="mori-rp" class="collapsed" aria-label="Mori radio player">
-  <div class="rp-hd" id="rp-hd"><span class="dot"></span><b>MORI RADIO</b><span class="rp-col" id="rp-col">▸</span></div>
-  <div class="rp-bd">
-    <div class="rp-now" id="rp-now">— pick a station —</div>
-    <select id="rp-sel"><option>Loading channels…</option></select>
-    <div class="rp-ctl"><button class="rp-pp" id="rp-pp" aria-label="Play">▶</button>
-      <input type="range" id="rp-vol" min="0" max="100" value="80" aria-label="Volume">
-      <button class="rp-pop" id="rp-pop" title="Keep playing across pages">⧉</button></div>
-    <div class="rp-hint">In-browser · ⧉ pop out to keep playing across pages</div>
-  </div>
-</div>
-<audio id="rp-audio"></audio>
-<script>
-(function(){
-  var API='https://mori.cracka.gg';
-  var $=function(i){return document.getElementById(i);};
-  var box=$('mori-rp'), sel=$('rp-sel'), au=$('rp-audio'), pp=$('rp-pp'), pop=null, STA=[];
-  function LS(k,v){try{if(v===undefined)return localStorage.getItem('moriRP_'+k);localStorage.setItem('moriRP_'+k,v);}catch(_){}}
-  if(LS('open')==='1') box.classList.remove('collapsed');
-  $('rp-hd').onclick=function(){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');};
-  $('rp-col').textContent=box.classList.contains('collapsed')?'▸':'▾';
-  function cur(){return STA[Number(sel.value)||0]||null;}
-  function play(){var st=cur();if(!st)return;au.src=st.u;au.volume=(Number($('rp-vol').value)||80)/100;au.play().then(function(){box.classList.add('playing');pp.textContent='⏸';$('rp-now').textContent='▶ '+st.n;}).catch(function(){$('rp-now').textContent='⚠ tap ▶ again';});}
-  function stop(){au.pause();box.classList.remove('playing');pp.textContent='▶';}
-  pp.onclick=function(){if(au.paused)play();else stop();};
-  sel.onchange=function(){LS('sta',sel.value);if(!au.paused)play();else{var st=cur();if(st)$('rp-now').textContent='— '+st.n+' —';}};
-  var v0=LS('vol'); if(v0)$('rp-vol').value=v0;
-  $('rp-vol').oninput=function(){au.volume=(Number(this.value)||0)/100;LS('vol',this.value);if(pop&&!pop.closed){try{pop.postMessage({vol:au.volume},'*');}catch(_){}}};
-  $('rp-pop').onclick=function(){var st=cur();if(!st)return;stop();
-    var html='<!doctype html><meta charset=utf-8><title>Mori Radio</title><body style="margin:0;background:#0b0b17;color:#e7e9f5;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:10px">'+
-      '<div style="font:700 13px Orbitron,sans-serif;letter-spacing:1px;color:#00ffff">MORI RADIO</div><div id=n style="font:11px monospace;color:#8a8a9a">'+st.n+'</div>'+
-      '<audio id=a autoplay controls src="'+st.u+'" style="width:300px"></audio><div style="font:10px monospace;color:#8a8a9a">Keeps playing while you browse. Close to stop.</div>'+
-      '<'+'script>onmessage=function(e){if(e.data&&e.data.vol!=null)document.getElementById("a").volume=e.data.vol;}<'+'/script>';
-    pop=window.open('','moriRadio','width=360,height=190');if(pop){pop.document.write(html);pop.document.close();$('rp-now').textContent='⧉ playing in pop-out';}else{$('rp-now').textContent='⚠ allow pop-ups';play();}};
-  fetch(API+'/api/stations').then(function(r){return r.json();}).then(function(d){STA=(d&&d.stations)||[];if(!STA.length){sel.innerHTML='<option>No channels</option>';return;}
-    sel.innerHTML=STA.map(function(s,i){return '<option value="'+i+'">'+(s.n||('Station '+(i+1))).replace(/</g,'&lt;')+'</option>';}).join('');
-    var last=LS('sta');if(last!=null&&STA[Number(last)]){sel.value=last;}$('rp-now').textContent='— '+(cur()?cur().n:'')+' —';
-  }).catch(function(){sel.innerHTML='<option>Channels unavailable</option>';});
-})();
-</script>
-<!-- ===== END MORI RADIO MINI-PLAYER ===== -->
 
-  <!-- ===== MORI TTS TICKER BAR ===== -->
-  <div id="mori-tick" class="mt-empty" role="region" aria-label="Mori news ticker" style="max-width:1180px;margin:20px auto">
-    <span class="mt-tag">📡 <b>MORI</b></span>
-    <button class="mt-btn" id="mt-pause" title="Pause scrolling" aria-label="Pause scrolling" aria-pressed="false">⏸</button>
-    <div class="mt-view"><div class="mt-track" id="mt-track"></div></div>
-    <button class="mt-btn" id="mt-spk" title="Hear the latest headline" aria-label="Speak latest headline" aria-pressed="false">🔊</button>
-  </div>
-  <style>
-  #mori-tick{position:relative;display:flex;align-items:center;gap:8px;width:100%;font-family:'Rajdhani','Segoe UI',sans-serif;font-size:14px;font-weight:600;background:linear-gradient(90deg,rgba(9,9,17,.94),rgba(17,9,28,.94));border-top:1px solid rgba(180,0,255,.35);border-bottom:1px solid rgba(0,255,255,.22);color:#dfe6ff;padding:7px 12px;box-sizing:border-box;overflow:hidden;border-radius:10px}
-  #mori-tick .mt-tag{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#00ffff;border-right:1px solid rgba(255,255,255,.12);padding-right:10px}
-  #mori-tick .mt-tag b{background:linear-gradient(90deg,#00ff32,#00ffff,#b400ff,#ff2079,#00ff32);background-size:240% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:mori-wave 7s ease-in-out infinite}
-  @keyframes mori-wave{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
-  #mori-tick .mt-view{flex:1 1 auto;overflow:hidden;white-space:nowrap;position:relative;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
-  #mori-tick .mt-track{display:inline-block;white-space:nowrap;padding-left:100%;animation:mt-scroll 40s linear infinite;will-change:transform}
-  #mori-tick.mt-paused .mt-track,#mori-tick .mt-view:hover .mt-track{animation-play-state:paused}
-  #mori-tick .mt-track a{text-decoration:none}#mori-tick .mt-track a:hover{text-decoration:underline}
-  #mori-tick .mt-sep{color:#5a5a72;margin:0 15px}
-  #mori-tick .mt-btn{flex:0 0 auto;cursor:pointer;border:1px solid rgba(0,255,255,.35);background:rgba(0,255,255,.06);color:#00ffff;border-radius:8px;font-size:13px;line-height:1;padding:5px 8px;transition:.15s}
-  #mori-tick .mt-btn:hover{background:rgba(0,255,255,.18);box-shadow:0 0 10px rgba(0,255,255,.3)}
-  #mori-tick .mt-btn[aria-pressed="true"]{background:rgba(0,255,50,.18);border-color:rgba(0,255,50,.5);color:#00ff64}
-  #mori-tick.mt-empty{display:none}
-  @keyframes mt-scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-  @media(prefers-reduced-motion:reduce){#mori-tick .mt-track{animation-duration:0s;padding-left:0}}
-  </style>
-  <script>
-  (function(){
-    var API='https://mori.cracka.gg', GUILD='';
-    var PALETTE=['#00ff32','#00ffff','#b400ff','#ff2079','#ffe600'];
-    var FONTS={'':'', rajdhani:"'Rajdhani',sans-serif", chakra:"'Chakra Petch',sans-serif", mono:"'Share Tech Mono',monospace", system:"system-ui,Segoe UI,sans-serif"};
-    var bar=document.getElementById('mori-tick'), track=document.getElementById('mt-track'), spk=document.getElementById('mt-spk'), pause=document.getElementById('mt-pause');
-    var items=[], cfg={enabled:true,engine:'browser',voice:'af_bella',rate:'1'}, kokoroReady=false, cur=null, audio=null;
-    var _speed=3;
-    function applySpeed(){ var PXPS={1:22,2:38,3:55,4:78,5:110}; var w=track.scrollWidth||0; var v=PXPS[_speed]||55; track.style.animationDuration=(w>40?(w/v):40).toFixed(1)+'s'; }
-    function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-    function applyDisp(d){ d=d||{}; _speed=Math.max(1,Math.min(5,Number(d.speed)||3)); if(d.font&&FONTS[d.font])bar.style.fontFamily=FONTS[d.font]; if(d.size)bar.style.fontSize=(Number(d.size)||14)+'px'; }
-    function chunkHtml(){ return items.map(function(it,i){ var col=PALETTE[i%PALETTE.length], t=esc(it.title||''); return it.link?'<a href="'+esc(it.link)+'" target="_blank" rel="noopener" style="color:'+col+'">'+t+'</a>':'<span style="color:'+col+'">'+t+'</span>'; }).join('<span class="mt-sep">◆</span>'); }
-    function render(){ if(!items.length){ bar.className='mt-empty'; return; } bar.className=''; var h=chunkHtml(); track.innerHTML=h+'<span class="mt-sep">◆</span>'+h; cur=(items[0]&&items[0].title)?items[0].title:null; spk.style.display=(cfg.enabled===false)?'none':''; applySpeed(); }
-    pause.addEventListener('click',function(){ var p=bar.classList.toggle('mt-paused'); pause.setAttribute('aria-pressed',p?'true':'false'); pause.textContent=p?'▶':'⏸'; pause.title=p?'Resume scrolling':'Pause scrolling'; });
-    function stopAudio(){ try{ if(audio){audio.pause();audio=null;} window.speechSynthesis&&window.speechSynthesis.cancel(); }catch(_){} spk.setAttribute('aria-pressed','false'); }
-    function speakBrowser(text){ if(!('speechSynthesis' in window))return false; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text); u.rate=parseFloat(cfg.rate)||1; u.onend=function(){spk.setAttribute('aria-pressed','false');}; window.speechSynthesis.speak(u); return true; }catch(_){ return false; } }
-    function speakKokoro(text){ fetch(API+'/api/tts/say',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:text,voice:cfg.voice})}).then(function(r){return r.json().catch(function(){return{};});}).then(function(r){ if(r.audioB64){ audio=new Audio('data:'+(r.contentType||'audio/mpeg')+';base64,'+r.audioB64); audio.onended=function(){spk.setAttribute('aria-pressed','false');}; audio.play(); } else { if(!speakBrowser(text)) spk.setAttribute('aria-pressed','false'); } }).catch(function(){ if(!speakBrowser(text)) spk.setAttribute('aria-pressed','false'); }); }
-    spk.addEventListener('click',function(){ if(spk.getAttribute('aria-pressed')==='true'){ stopAudio(); return; } if(!cur)return; spk.setAttribute('aria-pressed','true'); if(cfg.engine==='kokoro')speakKokoro(cur); else if(!speakBrowser(cur))speakKokoro(cur); });
-    fetch(API+'/api/ticker'+(GUILD?('?guild='+encodeURIComponent(GUILD)):'')).then(function(r){return r.json();}).then(function(d){ items=(d&&d.items)||[]; if(d&&d.tts)cfg=d.tts; kokoroReady=!!(d&&d.kokoro); applyDisp(d&&d.ticker); render(); if(document.fonts&&document.fonts.ready){document.fonts.ready.then(applySpeed);} window.addEventListener('resize',applySpeed); }).catch(function(){ bar.className='mt-empty'; });
-  })();
-  </script>
-  <!-- ===== END MORI TTS TICKER BAR ===== -->
 </body>
 </html>
- 
+ 

@@ -148,18 +148,6 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-i
 </div>
 <!-- ===== END JOIN BANNER ===== -->
 
-<footer class="foot"><div class="wrap">
-  <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
-  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
-  <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
-  <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
-</div></footer>
-<script>var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});</script>
-<script>
-(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
-document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
-var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
-</script>
 <!-- ===== MORI RADIO MINI-PLAYER — drop in once before </body> on every site ===== -->
 <!-- Docked bottom-right. Pulls all channels from /api/stations. ⧉ Pop out keeps playing across -->
 <!-- page loads & games. HTML5 audio (separate from DJ Mori in Discord VC). Golden-rule component. -->
@@ -204,7 +192,7 @@ var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floo
   var box=$('mori-rp'), sel=$('rp-sel'), au=$('rp-audio'), pp=$('rp-pp'), pop=null, STA=[];
   function LS(k,v){try{if(v===undefined)return localStorage.getItem('moriRP_'+k);localStorage.setItem('moriRP_'+k,v);}catch(_){}}
   if(LS('open')==='1') box.classList.remove('collapsed');
-  $('rp-hd').onclick=function(){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');};
+  (function(){var hd=$('rp-hd'),dg=false,mv=false,sx,sy,ox,oy;function dn(e){var t=e.touches?e.touches[0]:e;dg=true;mv=false;sx=t.clientX;sy=t.clientY;var r=box.getBoundingClientRect();ox=r.left;oy=r.top;box.style.right='auto';box.style.bottom='auto';box.style.left=ox+'px';box.style.top=oy+'px';if(e.cancelable)e.preventDefault();}function mvf(e){if(!dg)return;var t=e.touches?e.touches[0]:e;var dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>4)mv=true;box.style.left=Math.max(0,Math.min(window.innerWidth-46,ox+dx))+'px';box.style.top=Math.max(0,Math.min(window.innerHeight-32,oy+dy))+'px';}function up(){if(!dg)return;dg=false;if(!mv){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');}}hd.style.cursor='move';hd.title='Drag to move · click to collapse';hd.addEventListener('mousedown',dn);window.addEventListener('mousemove',mvf);window.addEventListener('mouseup',up);hd.addEventListener('touchstart',dn,{passive:false});window.addEventListener('touchmove',mvf,{passive:false});window.addEventListener('touchend',up);})();
   $('rp-col').textContent=box.classList.contains('collapsed')?'▸':'▾';
   function cur(){return STA[Number(sel.value)||0]||null;}
   function play(){var st=cur();if(!st)return;au.src=st.u;au.volume=(Number($('rp-vol').value)||80)/100;au.play().then(function(){box.classList.add('playing');pp.textContent='⏸';$('rp-now').textContent='▶ '+st.n;}).catch(function(){$('rp-now').textContent='⚠ tap ▶ again';});}
@@ -273,5 +261,19 @@ var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floo
   })();
   </script>
   <!-- ===== END MORI TTS TICKER BAR ===== -->
+
+<footer class="foot"><div class="wrap">
+  <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
+  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
+  <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
+  <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
+</div></footer>
+<script>var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});</script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
+document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
+var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
+</script>
+
 </body>
 </html>

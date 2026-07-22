@@ -158,58 +158,6 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;background-i
 </div>
 <!-- ===== END JOIN BANNER ===== -->
 
-<footer class="foot"><div class="wrap">
-  <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
-  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
-  <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
-  <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
-</div></footer>
-<script>
-var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});
-document.querySelectorAll('.fbtn').forEach(function(el){el.style.animationDelay=(-(Math.random()*13)).toFixed(2)+'s';});
-(function(){
-  var IMG="?x-oss-process=image/resize,w_640/format/webp";
-  var SHOW_NSFW=true, TILES=6;
-  var AC=["var(--green)","var(--purple)","var(--cyan)","var(--pink)","var(--yellow)"];
-  var FALLBACK=[
-    {id:767943,slug:"cracka-s-donald-trump-us-flag-hueforge",title:"Cracka's Donald Trump US Flag",coverUrl:"https://makerworld.bblmw.com/makerworld/model/US37e3b7091f93ac/design/2024-11-08_4ee0a4ced7e7e.jpg"},
-    {id:674648,slug:"beavis-gadsen-are-you-threatening-me-hueforge",title:'Beavis (Gadsden) "Are You Threatening Me?"',coverUrl:"https://makerworld.bblmw.com/makerworld/model/US807950559d0c54/design/2024-10-01_750c44a63c1a5.jpg"},
-    {id:646908,slug:"fkn-mint-hueforge",title:"FKN Mint HueForge",coverUrl:"https://makerworld.bblmw.com/makerworld/model/US77c4f560c01598/design/2024-09-16_98a5bde2bc574.jpg"},
-    {id:611619,slug:"welcome-to-the-gunshine-state",title:"Welcome To The Gunshine State",coverUrl:"https://makerworld.bblmw.com/makerworld/model/USb092d2570b072c/design/2024-08-29_4e7b0f7de270a.jpg"}
-  ];
-  var grid=document.getElementById('printGrid');
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
-  function render(models){
-    if(!models||!models.length)return;
-    var s=shuffle(models),html='';
-    for(var i=0;i<TILES;i++){var m=s[i%s.length];
-      html+='<a class="card" href="https://makerworld.com/en/models/'+m.id+'-'+m.slug+'" target="_blank" rel="noopener" style="--ac:'+AC[i%AC.length]+'">'
-        +'<div class="card-media"><img loading="lazy" src="'+m.coverUrl+IMG+'" alt=""><div class="veil"></div><span class="badge">MakerWorld</span></div>'
-        +'<div class="card-body"><h3>'+esc(m.title)+'</h3><p>HueForge print · Cracka FPV</p></div></a>';
-    }
-    grid.innerHTML=html;
-  }
-  render(FALLBACK);
-  fetch('https://hub.cracka.gg/models.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-    var d=(j&&j.models)||[],out=[];
-    for(var i=0;i<d.length;i++){var x=d[i];if(!x||!x.id||!x.coverUrl)continue;if(x.nsfw&&!SHOW_NSFW)continue;
-      out.push({id:x.id,slug:x.slug||"",title:x.title||"MakerWorld model",coverUrl:String(x.coverUrl).split("?")[0]});}
-    if(out.length)render(out);
-  }).catch(function(){});
-})();
-</script>
-<script>
-(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
-document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
-var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
-</script>
-<script>
-(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
-function pick(p){var x=p?PAL.filter(function(c){return c!==p;}):PAL;return x[Math.floor(Math.random()*x.length)];}
-document.addEventListener('mouseover',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||t._hlOn)return;t._hlOn=true;t.style.setProperty('--hl',pick(t._hlPrev));t._hlPrev=t.style.getPropertyValue('--hl');});
-document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||(e.relatedTarget&&t.contains(e.relatedTarget)))return;t._hlOn=false;});})();
-</script>
 <!-- ===== MORI RADIO MINI-PLAYER — drop in once before </body> on every site ===== -->
 <!-- Docked bottom-right. Pulls all channels from /api/stations. ⧉ Pop out keeps playing across -->
 <!-- page loads & games. HTML5 audio (separate from DJ Mori in Discord VC). Golden-rule component. -->
@@ -254,7 +202,7 @@ document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target
   var box=$('mori-rp'), sel=$('rp-sel'), au=$('rp-audio'), pp=$('rp-pp'), pop=null, STA=[];
   function LS(k,v){try{if(v===undefined)return localStorage.getItem('moriRP_'+k);localStorage.setItem('moriRP_'+k,v);}catch(_){}}
   if(LS('open')==='1') box.classList.remove('collapsed');
-  $('rp-hd').onclick=function(){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');};
+  (function(){var hd=$('rp-hd'),dg=false,mv=false,sx,sy,ox,oy;function dn(e){var t=e.touches?e.touches[0]:e;dg=true;mv=false;sx=t.clientX;sy=t.clientY;var r=box.getBoundingClientRect();ox=r.left;oy=r.top;box.style.right='auto';box.style.bottom='auto';box.style.left=ox+'px';box.style.top=oy+'px';if(e.cancelable)e.preventDefault();}function mvf(e){if(!dg)return;var t=e.touches?e.touches[0]:e;var dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>4)mv=true;box.style.left=Math.max(0,Math.min(window.innerWidth-46,ox+dx))+'px';box.style.top=Math.max(0,Math.min(window.innerHeight-32,oy+dy))+'px';}function up(){if(!dg)return;dg=false;if(!mv){var c=box.classList.toggle('collapsed');$('rp-col').textContent=c?'▸':'▾';LS('open',c?'0':'1');}}hd.style.cursor='move';hd.title='Drag to move · click to collapse';hd.addEventListener('mousedown',dn);window.addEventListener('mousemove',mvf);window.addEventListener('mouseup',up);hd.addEventListener('touchstart',dn,{passive:false});window.addEventListener('touchmove',mvf,{passive:false});window.addEventListener('touchend',up);})();
   $('rp-col').textContent=box.classList.contains('collapsed')?'▸':'▾';
   function cur(){return STA[Number(sel.value)||0]||null;}
   function play(){var st=cur();if(!st)return;au.src=st.u;au.volume=(Number($('rp-vol').value)||80)/100;au.play().then(function(){box.classList.add('playing');pp.textContent='⏸';$('rp-now').textContent='▶ '+st.n;}).catch(function(){$('rp-now').textContent='⚠ tap ▶ again';});}
@@ -323,5 +271,59 @@ document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target
   })();
   </script>
   <!-- ===== END MORI TTS TICKER BAR ===== -->
+
+<footer class="foot"><div class="wrap">
+  <img src="https://hub.cracka.gg/Cracka_Wordmark_GreenPurple.png" alt="DJ Cracka">
+  <div class="foot-links"><a href="https://mori.cracka.gg/terms">Terms</a><a href="https://mori.cracka.gg/privacy">Privacy</a><a href="suite.html">The Suite</a><a href="content.html">Content</a><a href="prints.html">3D Print</a><a href="about.html">About</a><a href="license.html">License</a><a href="contact.html">Contact</a><a href="https://mori.cracka.dev">Mori&nbsp;Bot</a></div>
+  <div class="midnight">Cyberpunk Vibe &mdash; <b>4</b><i>:</i><b>20</b> Midnight Edition</div>
+  <div class="copy">&copy; 2026 DJ Cracka Software Suite &middot; cracka.dev &middot; all rights reserved</div>
+</div></footer>
+<script>
+var b=document.getElementById('burger'),m=document.getElementById('menu');b.addEventListener('click',function(){m.classList.toggle('open')});
+document.querySelectorAll('.fbtn').forEach(function(el){el.style.animationDelay=(-(Math.random()*13)).toFixed(2)+'s';});
+(function(){
+  var IMG="?x-oss-process=image/resize,w_640/format/webp";
+  var SHOW_NSFW=true, TILES=6;
+  var AC=["var(--green)","var(--purple)","var(--cyan)","var(--pink)","var(--yellow)"];
+  var FALLBACK=[
+    {id:767943,slug:"cracka-s-donald-trump-us-flag-hueforge",title:"Cracka's Donald Trump US Flag",coverUrl:"https://makerworld.bblmw.com/makerworld/model/US37e3b7091f93ac/design/2024-11-08_4ee0a4ced7e7e.jpg"},
+    {id:674648,slug:"beavis-gadsen-are-you-threatening-me-hueforge",title:'Beavis (Gadsden) "Are You Threatening Me?"',coverUrl:"https://makerworld.bblmw.com/makerworld/model/US807950559d0c54/design/2024-10-01_750c44a63c1a5.jpg"},
+    {id:646908,slug:"fkn-mint-hueforge",title:"FKN Mint HueForge",coverUrl:"https://makerworld.bblmw.com/makerworld/model/US77c4f560c01598/design/2024-09-16_98a5bde2bc574.jpg"},
+    {id:611619,slug:"welcome-to-the-gunshine-state",title:"Welcome To The Gunshine State",coverUrl:"https://makerworld.bblmw.com/makerworld/model/USb092d2570b072c/design/2024-08-29_4e7b0f7de270a.jpg"}
+  ];
+  var grid=document.getElementById('printGrid');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function render(models){
+    if(!models||!models.length)return;
+    var s=shuffle(models),html='';
+    for(var i=0;i<TILES;i++){var m=s[i%s.length];
+      html+='<a class="card" href="https://makerworld.com/en/models/'+m.id+'-'+m.slug+'" target="_blank" rel="noopener" style="--ac:'+AC[i%AC.length]+'">'
+        +'<div class="card-media"><img loading="lazy" src="'+m.coverUrl+IMG+'" alt=""><div class="veil"></div><span class="badge">MakerWorld</span></div>'
+        +'<div class="card-body"><h3>'+esc(m.title)+'</h3><p>HueForge print · Cracka FPV</p></div></a>';
+    }
+    grid.innerHTML=html;
+  }
+  render(FALLBACK);
+  fetch('https://hub.cracka.gg/models.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    var d=(j&&j.models)||[],out=[];
+    for(var i=0;i<d.length;i++){var x=d[i];if(!x||!x.id||!x.coverUrl)continue;if(x.nsfw&&!SHOW_NSFW)continue;
+      out.push({id:x.id,slug:x.slug||"",title:x.title||"MakerWorld model",coverUrl:String(x.coverUrl).split("?")[0]});}
+    if(out.length)render(out);
+  }).catch(function(){});
+})();
+</script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];var prev=null;
+document.querySelectorAll('footer a, .foot-links a, .mj-foot a').forEach(function(a){
+var pool=prev?PAL.filter(function(c){return c!==prev;}):PAL;var c=pool[Math.floor(Math.random()*pool.length)];a.style.setProperty('color',c,'important');prev=c;});})();
+</script>
+<script>
+(function(){var PAL=['#00ff32','#b400ff','#ff2079','#ffe600','#00ffff'];
+function pick(p){var x=p?PAL.filter(function(c){return c!==p;}):PAL;return x[Math.floor(Math.random()*x.length)];}
+document.addEventListener('mouseover',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||t._hlOn)return;t._hlOn=true;t.style.setProperty('--hl',pick(t._hlPrev));t._hlPrev=t.style.getPropertyValue('--hl');});
+document.addEventListener('mouseout',function(e){var t=e.target.closest?e.target.closest('.grid a.card'):null;if(!t||(e.relatedTarget&&t.contains(e.relatedTarget)))return;t._hlOn=false;});})();
+</script>
+
 </body>
 </html>
